@@ -16,7 +16,7 @@ package org.as3lang.www
         public function run():void
         {
             /* Note:
-               The simplest way to display a way page in AS3 trough CGI
+               The simplest way to display a web page in AS3 trough CGI
                
                1. set the content-type
                2. 2x CRLF
