@@ -1,0 +1,11 @@
+import redbean.*;
+import shell.FileSystem;
+
+compile( "src/index.as" );
+
+if( FileSystem.exists( "index.abc" ) )
+{
+    FileSystem.removeFile( "index.abc" );
+}
+
+FileSystem.move( "src/index.abc", "index.abc" );
