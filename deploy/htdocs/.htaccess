@@ -1,0 +1,7 @@
+
+ErrorDocument 500 /500.html
+
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.abc [QSA,L]
+RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization},L]
