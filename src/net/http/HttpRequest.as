@@ -15,7 +15,7 @@ package net.http
      * and an optional body.
      * </p>
      */
-    public class HttpRequest extends HttpMessage
+    public class HttpRequest extends HttpMessage implements Request
     {
         
         private static var _DEFAULT_PORT:int = -1;
