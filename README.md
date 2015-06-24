@@ -1,7 +1,7 @@
 www.as3lang.org
 ===============
 
-build an community web site about AS3 with AS3  
+build a community web site about AS3 with AS3  
 for the people  
 for the community  
 for the language  
