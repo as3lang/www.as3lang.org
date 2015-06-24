@@ -4,7 +4,7 @@ package net.http
     /**
      * The HTTP Header class.
      */ 
-    public class HttpHeader
+    public class HttpHeader implements Header
     {
         
         public static const ACCEPT:String            = "Accept";
