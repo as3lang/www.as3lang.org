@@ -1,7 +1,10 @@
 package org.as3lang.www
 {
     import net.http.HttpUtils;
+    import net.http.Request;
+    import net.http.Response;
     import net.http.cgi.CommonGateway;
+    import net.http.cgi.CommonResponse;
     
     import shell.Program;
     
@@ -17,33 +20,40 @@ package org.as3lang.www
             
         }
         
-        public function misc():void
+        /* Now our WebSite class inherit from CommonGateway
+           and implement a more advanced "run" mecanism.
+        
+           This run() method build a Request object from
+           the server environment variables and then delegate
+           it to the apply() method that we are overriding here
+           
+           The principle is very simple:
+             - take a Request as input (stdin)
+             - generate a Response for the output (stdout) 
+        */
+        public override function apply( request:Request ):Response
         {
             /* Note:
-               The simplest way to display a web page in AS3 trough CGI
+               The more civilized way to display a web page in AS3 trough CGI
                
-               1. set the content-type
-               2. 2x CRLF
-               3. content body
-               
-               by default trace() end with CRLF
+               build a Response object
             */
-            trace( "Content-Type: text/plain; charset=utf-8" );
-            trace( "" );
-            trace( "hello world" );
-            trace( "" );
+            var response:CommonResponse = new CommonResponse();
             
-            /* Note:
-               As soon as your program run in the context of Apache
-               this one pass to your CGI a number of environment variables
-               the one we are interested in starts with "HTTP_"
+                // 1. first thing you want to do is to define the content-type
+                response.contentType = "text/plain; charset=utf-8";
+                
+                // 2. then write some content in the body
+                response.body = "hello world";
+            
+            /* attach the request to the response
+               it is totally useless now but
+               later you will understand why we do that
             */
-            trace( "Here some HTTP headers" );
-            trace( "----------------------" );
-            var headers:Array = HttpUtils.environ_http_headers( Program.environ );
-            trace( headers.join( "\r\n" ) );
-            trace( "" );
-            
+            response.httpRequest = request;
+                
+            // finally return the response
+            return response;
         }
         
     }
