@@ -13,7 +13,7 @@ package net.http
      * and an optional body.
      * </p>
      */
-    public class HttpResponse extends HttpMessage
+    public class HttpResponse extends HttpMessage implements Response
     {
         
         private static const _CR:String   = "\r";
@@ -26,11 +26,15 @@ package net.http
         private var _statusCode:String;
         private var _reasonPhrase:String;
         
-        private var _request:HttpRequest;
+        //private var _request:HttpRequest;
+        private var _request:Request;
         
         public function HttpResponse()
         {
             super();
+            
+            _statusCode   = "";
+            _reasonPhrase = "";
         }
         
         public function get statusCode():String { return _statusCode; }
@@ -39,14 +43,52 @@ package net.http
         public function get reasonPhrase():String { return _reasonPhrase; }
         public function set reasonPhrase( value:String ):void { _reasonPhrase = value; }
         
+        /**
+         * The HTTP status of the response.
+         */
+        public function get status():String
+        {
+            var str:String = "";
+            
+            if( statusCode != "" )
+            {
+                str += statusCode;
+                
+                if( reasonPhrase != "" )
+                {
+                    str += " " + reasonPhrase;
+                }
+            }
+            
+            return str;
+        }
+        
+        /** @private */
+        public function set status( value:String ):void
+        {
+            var tmp:Object = HttpUtils.parse_http_status( value );
+            
+            if( tmp.statusCode != "" )
+            {
+                statusCode = tmp.statusCode;
+            }
+            
+            if( tmp.reasonPhrase != "" )
+            {
+                reasonPhrase = tmp.reasonPhrase;
+            }
+        }
         
         public function get statusLine():String
         {
             return httpVersion + " " + statusCode + " " + reasonPhrase;
         }
         
-        public function get httpRequest():HttpRequest { return _request; }
-        public function set httpRequest( value:HttpRequest ):void { _request = value; }
+        //public function get httpRequest():HttpRequest { return _request; }
+        //public function set httpRequest( value:HttpRequest ):void { _request = value; }
+        
+        public function get httpRequest():Request { return _request; }
+        public function set httpRequest( value:Request ):void { _request = value; }
         
         
         public function get bodyText():String
