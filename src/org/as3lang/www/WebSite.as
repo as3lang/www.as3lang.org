@@ -1,13 +1,14 @@
 package org.as3lang.www
 {
     import net.http.HttpUtils;
+    import net.http.cgi.CommonGateway;
     
     import shell.Program;
     
     /**
      * Main class serving www.as3lang.org
      */ 
-    public class WebSite
+    public class WebSite extends CommonGateway
     {
         
         public function WebSite()
@@ -16,7 +17,7 @@ package org.as3lang.www
             
         }
         
-        public function run():void
+        public function misc():void
         {
             /* Note:
                The simplest way to display a web page in AS3 trough CGI
