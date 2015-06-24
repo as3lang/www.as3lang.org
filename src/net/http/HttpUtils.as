@@ -168,6 +168,20 @@ package net.http
             return statusline;
         }
         
+        public static function parse_http_status( str:String ):Object
+        {
+            var status:Object = {};
+            status.statusCode  = "";
+            status.reasonPhrase = "";
+            
+            var pos1:int = str.indexOf( _SP );
+            
+            status.statusCode  = str.substring( 0, pos1 );
+            status.reasonPhrase = str.substring( pos1 + 1 );
+            
+            return status;
+        }
+        
         public static function parse_http_response( bytes:ByteArray, trimEOL:Boolean = true ):HttpResponse
         {
             var httpResponse:HttpResponse = new HttpResponse();
