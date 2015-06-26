@@ -297,7 +297,8 @@ package net.http
                 return String( header.value );
             }
             
-            return "";
+            //return "";
+            return null;
         }
         /** @private */
         public function set contentType( value:String ):void
