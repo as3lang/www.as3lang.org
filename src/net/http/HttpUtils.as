@@ -1,6 +1,11 @@
 package net.http
 {
+    import C.stdio.fread;
+    import C.stdio.stdin;
+    
     import flash.utils.ByteArray;
+    
+    import net.URI;
     
     /**
      * HTTP utilities.
@@ -149,6 +154,115 @@ package net.http
             }
             
             return headers;
+        }
+        
+        public static function read_post_body( bytes:ByteArray, len:uint ):int
+        {
+            /* Note:
+               Yes we read directly from the standard input (stdin)
+               exactly like a command line executable.
+            */
+            /* TODO:
+               need to update the code for case where len is
+               bigger than MAX_INT
+               
+               fread() can only read till nitems
+               and nitems is an int so is limited by MAX_INT (2 GB)
+            
+               but ByteArray can read as much as MAX_UINT (4 GB)
+               so we could split len and read in a loop to fill
+               the bytearray
+            
+               also for extreme case where some post data would
+               be bigger than 4GB we could still read it all
+               by saving the data to an external file
+            
+               and need to check RFC if there is some kind
+               of limit defined
+            */
+            var result:int = fread( bytes, int(len), stdin );
+            
+            //reset as we will want to parse it from the start
+            bytes.position = 0;
+            
+            // allow us to check for errors
+            return result;
+        }
+        
+        public static function read_post_raw( bytes:ByteArray,
+                                              buffer:uint = 8192 ):Number
+        {
+            /* Note:
+               Alternative way to do it and/for case where
+               the content-length is unknown
+            
+               we use a default 8K buffer, eg. BUFSIZ
+            */
+            var len:Number  = 0;
+            var read:int    = 0;
+            var b:ByteArray = new ByteArray();
+            
+            /* Note:
+               as with a command line exe we can loop
+               with fread() till the data to read is exhausted
+            
+               loop as long as fread() does not returns zero
+               if returns zero that means EOF reached
+               if returns less than zero that means an error occured
+            
+               because we use a ByteArray to store the data
+               we can read till MAX_UINT eg. 4GB of data
+            */
+            while( read = fread( b, int(buffer), stdin ) )
+            {
+                // an error occured
+                if( read < 0 )
+                {
+                    // we may have partial data in bytes
+                    bytes.position = 0;
+                    // if an error occured we want to know it
+                    return read;
+                }
+                
+                bytes.writeBytes( b );
+                len += read;
+                b.clear();
+            }
+            
+            //reset as we will want to parse it from the start
+            bytes.position = 0;
+            
+            // otherwise return the lenght of data we just read
+            return len;
+        }
+        
+        public static function parse_form_urlencoded( bytes:ByteArray ):Object
+        {
+            bytes.position = 0;
+            
+            var len:uint = bytes.length;
+            var query:String = "";
+            var str:String = "";
+            
+            str = bytes.readUTFBytes( len );
+            
+            if( str.indexOf("+") > -1 )
+            {
+                query = str.split( "+" ).join( " " );
+            }
+            
+            query = decodeURIComponent( query );
+            
+            var uri:URI = new URI();
+                uri.query = query;
+            
+            return uri.getQueryByMap();
+        }
+        
+        public static function parse_form_data( bytes:ByteArray ):Object
+        {
+            //TODO
+            return null;
         }
         
         public static function parse_http_statusline( str:String ):Object
