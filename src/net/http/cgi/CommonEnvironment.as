@@ -82,5 +82,30 @@ package net.http.cgi
         public function get serverProtocol():String { return _serverProtocol; }
         
         public function get serverSoftware():String { return _serverSoftware; }
+        
+        public function toString():String
+        {
+            var str:String = "";
+            
+                str += MetaVariables.AUTH_TYPE + " = " + authType + "\n";
+                str += MetaVariables.CONTENT_LENGTH + " = " + contentLength + "\n";
+                str += MetaVariables.CONTENT_TYPE + " = " + contentType + "\n";
+                str += MetaVariables.GATEWAY_INTERFACE + " = " + gatewayInterface + "\n";
+                str += MetaVariables.PATH_INFO + " = " + pathInfo + "\n";
+                str += MetaVariables.PATH_TRANSLATED + " = " + pathTranslated + "\n";
+                str += MetaVariables.QUERY_STRING + " = " + querySring + "\n";
+                str += MetaVariables.REMOTE_ADDR + " = " + remoteAddress + "\n";
+                str += MetaVariables.REMOTE_HOST + " = " + remoteHost + "\n";
+                str += MetaVariables.REMOTE_IDENT + " = " + remoteIdent + "\n";
+                str += MetaVariables.REMOTE_USER + " = " + remoteUser + "\n";
+                str += MetaVariables.REQUEST_METHOD + " = " + requestMethod + "\n";
+                str += MetaVariables.SCRIPT_NAME + " = " + scriptName + "\n";
+                str += MetaVariables.SERVER_NAME + " = " + serverName + "\n";
+                str += MetaVariables.SERVER_PORT + " = " + serverPort + "\n";
+                str += MetaVariables.SERVER_PROTOCOL + " = " + serverProtocol + "\n";
+                str += MetaVariables.SERVER_SOFTWARE + " = " + serverSoftware + "\n";
+            
+            return str;
+        }
     }
 }
