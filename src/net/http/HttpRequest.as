@@ -32,7 +32,7 @@ package net.http
         public static function get( destination:String ):HttpRequest
         {
             var request:HttpRequest = new HttpRequest();
-                request.method = HttpMethod.GET;
+                request.method = RequestMethod.GET;
                 request.set( destination );
             
             return request;
@@ -68,7 +68,7 @@ package net.http
             _protocol = "http";
             _port     = _DEFAULT_PORT;
             
-            _method   = HttpMethod.GET;
+            _method   = RequestMethod.GET;
             _path     = "/";
             _query    = "";
         }
@@ -80,7 +80,16 @@ package net.http
         public function get requestLine():String
         {
             var line:String = "";
+            
+            if( method != "" )
+            {
                 line += method;
+            }
+            else
+            {
+                line += RequestMethod.GET;
+            }
+                
                 line += _SP;
             
             if( path == "" )
@@ -343,19 +352,30 @@ package net.http
                 addHeaderLine( HttpHeader.USER_AGENT, "httplib" );
             }
             
-            if( (method == HttpMethod.POST) &&
+            if( (method == RequestMethod.POST) &&
                !hasHeader( HttpHeader.CONTENT_LENGTH ) )
             {
                 contentLength = bodyBytes.length;
             }
             
-            persistence( false );
+            
+            if( !hasHeader( HttpHeader.CONNECTION ) )
+            {
+                persistence( false );
+            }
             
             var i:uint;
             var len:uint = headers.length;
+            //var header:Header;
+            var header:HttpHeader;
             for( i = 0; i < len; i++ )
             {
-                request += headers[i] + _CRLF;
+                header = _headers[i];
+                if( header.value )
+                {
+                    //request += HttpHeader(header).toString() + _CRLF;
+                    request += header.toString() + _CRLF;
+                }
             }
             
             
