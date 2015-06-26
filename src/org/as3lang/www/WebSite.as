@@ -1,8 +1,10 @@
 package org.as3lang.www
 {
+    import net.http.HttpRequest;
     import net.http.HttpUtils;
     import net.http.Request;
     import net.http.Response;
+    import net.http.cgi.CommonEnvironment;
     import net.http.cgi.CommonGateway;
     import net.http.cgi.CommonResponse;
     
@@ -44,7 +46,26 @@ package org.as3lang.www
                 response.contentType = "text/plain; charset=utf-8";
                 
                 // 2. then write some content in the body
-                response.body = "hello world";
+                response.body  = "hello world";
+                response.body += "\r\n"; 
+                
+            var CRLF:String = "\r\n";
+            var line:String = "--------------------------------";
+            var tmp:String = "";
+            
+                tmp += CRLF;
+                tmp += "Here the CGI Environment variables:" + CRLF;
+                tmp += line + CRLF;
+                tmp += (environment as CommonEnvironment).toString();
+                tmp += line + CRLF;
+                tmp += CRLF;
+                tmp += "Here the Request you sent me:" + CRLF;
+                tmp += line + CRLF;
+                tmp += (request as HttpRequest).toString();
+                tmp += line + CRLF;
+                tmp += CRLF;
+                
+                response.body += tmp;
             
             /* attach the request to the response
                it is totally useless now but
