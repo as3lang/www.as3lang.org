@@ -15,3 +15,12 @@ all the things that AS3 can do server side
 and maybe get inspired to build your own web site using AS3 :)﻿  
 
 
+Why AS3lang ?
+-------------
+
+Here what we know
+  - **AS1** JS like
+  - **AS2** TypeScript/Dart/CoffeeScript like
+  - **AS3** great or good enough
+  - **AS4** will not happen
+
