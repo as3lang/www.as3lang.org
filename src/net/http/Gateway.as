@@ -18,6 +18,20 @@ package net.http
         function get request():Request;
         
         /**
+         * The errors stream that occured during the processing of the request.
+         * 
+         * <p>
+         * In a CGI server process we can not output errors anywhere as it could
+         * break the server response and produce an HTTP error 500, so we keep
+         * a separate stream for the errors
+         * (like a stderr in parallel of a stdout in an executable).
+         * </p>
+         */
+        function get errors():String;
+        /** @private */
+        function set errors( value:String ):void;
+        
+        /**
          * Run the current server request.
          * 
          * <p>
