@@ -119,7 +119,7 @@ package net.http.cgi
             // 2. write the status if present, if not it is assumed to be 200
             if( this.status != "" )
             {
-                write( this.status + "\r\n" );
+                write( "Status: " + this.status + "\r\n" );
             }
             
             var bodyLen:uint = this.bodyBytes.length;
