@@ -12,6 +12,7 @@ package net.http.cgi
     import net.http.RequestMethod;
     import net.http.Response;
     import net.http.StatusCode;
+    import net.mediatypes.text.TEXT_UTF8;
     
     import shell.Program;
     
@@ -23,15 +24,67 @@ package net.http.cgi
         private var _env:Environment;
         private var _errors:String;
         
+        protected var _destination:String;
         protected var _request:CommonRequest;
         
         public function CommonGateway():void
         {
             super();
             
-            _env     = null;
-            _errors  = "";
-            _request = null;
+            _env         = null;
+            _errors      = "";
+            _destination = "";
+            _request     = null;
+        }
+        
+        protected function buildDestination():String
+        {
+            /* We need to build a URL for the request
+            and with CGI we can do that in 2 different way
+            
+            1. The Server POV
+            a CGI script is called on the server
+            we are one resource among others
+            
+            we know we are an HTTP server so we use the "http" protocol
+            SERVER_NAME = www.as3lang.org
+            SCRIPT_NAME = /index.abc
+            
+            to build the URL we are concatening those values 
+            http:// + SERVER_NAME + SCRIPT_NAME
+            
+            we can have only 1 URL
+            URL = http://www.as3lang.org/index.abc
+            
+            2. The CGI POV
+            we are the end point called on the server
+            to respond to different paths
+            
+            we know we are an HTTP server so we use the "http" protocol
+            we will consider our SCRIPT_NAME to be the "root"
+            SERVER_NAME = www.as3lang.org
+            PATH_INFO = (can be many things)
+            
+            to build the URL we are basically ignoring the SCRIPT_NAME
+            http:// + SERVER_NAME + PATH_INFO
+            
+            and then we can have many URL
+            
+            if the PATH_INFO is empty we are at the root eg. "/"
+            URL = http://www.as3lang.org/
+            
+            if you try to visit
+            http://www.as3lang.org/index.abc/test123/
+            PATH_INFO = /test123/
+            URL = http://www.as3lang.org/test123/
+            */
+            
+            // for now we keep it simple
+            var dest:String = "";
+                dest += "http://";
+                dest += _env.serverName;
+                dest +=_env.scriptName;
+            return dest;
         }
         
         /** @inheritDoc */
@@ -44,6 +97,46 @@ package net.http.cgi
         public function get errors():String { return _errors; }
         /** @private */
         public function set errors( value:String ):void { _errors = value; }
+        
+        /** @inheritDoc */
+        public function get destination():String { return _destination; }
+        /** @private */
+        public function set destination( value:String ):void { _destination = value; }
+        
+        /** @inheritDoc */
+        public function authorized():Boolean
+        {
+            /* By default, we want to authorize all requests
+               when you inherit the Gateway override this method
+               to check for specifics
+               
+               for ex:
+               public override function authorized():Boolean
+               {
+                   if( environment.remoteAddress == "127.0.0.1" )
+                   {
+                       return true;
+                   }
+            
+                   return false;
+               }
+            
+               also you will need to do the check inside your apply() call
+               for ex:
+               public override function apply( request:Request ):Response
+               {
+                   if( authorized() )
+                   {
+                        // build a response with status = 200
+                   }
+                   else
+                   {
+                         // build an error response status = 401, 403, etc.
+                   }
+               }
+            */
+            return true;
+        }
         
         /** @inheritDoc */
         public function run():void
@@ -90,52 +183,15 @@ package net.http.cgi
             */
             var headers:Array = HttpUtils.environ_http_headers( Program.environ );
             
+            // we try build the request path if this one is empty
+            if( _destination == "" )
+            {
+                _destination = buildDestination();    
+            }
+            
+            
             // with all these informations we build a request object
-            _request = new CommonRequest( method, cType, query, headers, post );
-            
-            /* We need to build a URL for the request
-               and with CGI we can do that in 2 different way
-            
-               1. The Server POV
-                  a CGI script is called on the server
-                  we are one resource among others
-            
-                  we know we are an HTTP server so we use the "http" protocol
-                  SERVER_NAME = www.as3lang.org
-                  SCRIPT_NAME = /index.abc
-                  
-                  to build the URL we are concatening those values 
-                  http:// + SERVER_NAME + SCRIPT_NAME
-            
-                  we can have only 1 URL
-                  URL = http://www.as3lang.org/index.abc
-            
-               2. The CGI POV
-                  we are the end point called on the server
-                  to respond to different paths
-                  
-                  we know we are an HTTP server so we use the "http" protocol
-                  we will consider our SCRIPT_NAME to be the "root"
-                  SERVER_NAME = www.as3lang.org
-                  PATH_INFO = (can be many things)
-            
-                  to build the URL we are basically ignoring the SCRIPT_NAME
-                  http:// + SERVER_NAME + PATH_INFO
-            
-                  and then we can have many URL
-            
-                  if the PATH_INFO is empty we are at the root eg. "/"
-                  URL = http://www.as3lang.org/
-            
-                  if you try to visit
-                  http://www.as3lang.org/index.abc/test123/
-                  PATH_INFO = /test123/
-                  URL = http://www.as3lang.org/test123/
-            */
-            // for now we keep it simple
-            _request.host = _env.serverName;
-            _request.path = _env.scriptName;
-            
+            _request = new CommonRequest( method, cType, destination, query, headers, post );
             
             /* IMPORTANT:
                We have to catch errors,
@@ -178,7 +234,8 @@ package net.http.cgi
             if( response == null )
             {
                 response = new CommonResponse();
-                response.contentType = "text/plain; charset=utf-8";
+                //response.contentType = "text/plain; charset=utf-8";
+                response.contentType = TEXT_UTF8.toString();
                 response.body = "nothing to display";
             }
             
