@@ -32,6 +32,25 @@ package net.http
         function set errors( value:String ):void;
         
         /**
+         * The destination is the raw URL request received by the server.
+         * 
+         * <p>
+         * Depending on how you want your Gateway to work the logic
+         * to build this URL can differ.
+         * 
+         * This URL can also be influenced by the server forwarding the request.
+         * </p>
+         */
+        function get destination():String;
+        /** @private */
+        function set destination( value:String ):void;
+        
+        /**
+         * Indicates if the current request is authorized to run or not.
+         */
+        function authorized():Boolean;
+        
+        /**
          * Run the current server request.
          * 
          * <p>
