@@ -15,6 +15,7 @@ package net.http.cgi
         private var _postFile:Object;
         
         public function CommonRequest( method:String, contentType:String,
+                                       destination:String = "",
                                        query:String = "", headers:Array = null,
                                        post:ByteArray = null )
         {
@@ -23,7 +24,10 @@ package net.http.cgi
             _postMap  = null;
             _postFile = null;
             
-            set( "" );
+            /* By default, our request has an empty destination
+              but it can be overrided in the constructor
+            */
+            set( destination );
             this.method      = method;
             this.contentType = contentType;
             this.query       = query;
