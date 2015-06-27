@@ -72,6 +72,51 @@ package net.http.cgi
             super();
         }
         
+        protected function outputCommon( length:uint = 0 ):void
+        {
+            /* Note:
+            A CGI response is a bit different
+            than a plain HTTP response so
+            we need to manually layout the headers
+            
+            1. always write the content-type first
+            */
+            var cType:HttpHeader = getHeader( HttpHeader.CONTENT_TYPE ) as HttpHeader;
+            write( cType.toString() + "\r\n" );
+            
+            // 2. write the status if present, if not it is assumed to be 200
+            if( this.status != "" )
+            {
+                write( "Status: " + this.status + "\r\n" );
+            }
+            
+            // 3. we write the content-length if we have some content
+            if( length > 0 )
+            {
+                this.contentLength = length;
+                var cLength:HttpHeader = getHeader( HttpHeader.CONTENT_LENGTH ) as HttpHeader;
+                write( cLength.toString() + "\r\n" );
+            }
+        }
+        
+        protected function outputHeaders():void
+        {
+            // 4. we write other headers
+            var i:uint;
+            var len:uint = _headers.length;
+            var header:HttpHeader;
+            for( i = 0; i < len; i++ )
+            {
+                header = _headers[i];
+                // except those we have already written above
+                if( (header.name != HttpHeader.CONTENT_TYPE) &&
+                    (header.name != HttpHeader.CONTENT_LENGTH) )
+                {
+                    write( header.toString() + "\r\n" );
+                }
+            }
+        }
+        
         /**
          * Write string values to standard output.
          */
@@ -89,6 +134,15 @@ package net.http.cgi
          */
         public function writeBinary( bytes:ByteArray ):void
         {
+            /* Note:
+               if bytes.length is bigger than 2GB
+               we will need to split it in smaller
+               parts to pass it to fwrite()
+            
+               bytes are MAX_UINT (4GB)
+               but
+               fwrite() support only MAX_INT (2GB)
+            */
             bytes.position = 0;
             fwrite( bytes, bytes.length, stdout );
         }
@@ -106,46 +160,13 @@ package net.http.cgi
          */
         public function display():void
         {
-            /* Note:
-               A CGI response is a bit different
-               than a plain HTTP response so
-               we need to manually layout the headers
-            
-               1. always write the content-type first
-            */
-            var cType:HttpHeader = getHeader( HttpHeader.CONTENT_TYPE ) as HttpHeader;
-            write( cType.toString() + "\r\n" );
-            
-            // 2. write the status if present, if not it is assumed to be 200
-            if( this.status != "" )
-            {
-                write( "Status: " + this.status + "\r\n" );
-            }
-            
             var bodyLen:uint = this.bodyBytes.length;
             
-            // 3. we write the content-length if we have some content
-            if( bodyLen > 0 )
-            {
-                this.contentLength = bodyLen;
-                var cLength:HttpHeader = getHeader( HttpHeader.CONTENT_LENGTH ) as HttpHeader;
-                write( cLength.toString() + "\r\n" );
-            }
+            // 1. 2. 3.
+            outputCommon( bodyLen );
             
-            // 4. we write other headers
-            var i:uint;
-            var len:uint = _headers.length;
-            var header:HttpHeader;
-            for( i = 0; i < len; i++ )
-            {
-                header = _headers[i];
-                // except those we have already written above
-                if( (header.name != HttpHeader.CONTENT_TYPE) &&
-                    (header.name != HttpHeader.CONTENT_LENGTH) )
-                {
-                    write( header.toString() + "\r\n" );
-                }
-            }
+            // 4.
+            outputHeaders();
             
             // 5. blank line
             write( "\r\n" );
@@ -154,7 +175,8 @@ package net.http.cgi
             // body content even for a response is considered optional.
             if( bodyLen > 0 )
             {
-                write( this.body + "\r\n" );
+                //write( this.body + "\r\n" );
+                write( this.body );
             }
         }
     }
