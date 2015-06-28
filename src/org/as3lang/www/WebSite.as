@@ -1,19 +1,18 @@
 package org.as3lang.www
 {
+    import net.http.Header;
+    import net.http.HttpHeader;
     import net.http.HttpRequest;
-    import net.http.HttpUtils;
     import net.http.Request;
     import net.http.RequestMethod;
     import net.http.Response;
     import net.http.cgi.CommonEnvironment;
-    import net.http.cgi.CommonGateway;
     import net.http.cgi.CommonResponse;
     import net.http.responses.TextResponse;
     import net.http.router.Route;
     import net.http.web.WebGateway;
-    import net.mediatypes.text.TEXT_UTF8;
     
-    import shell.Program;
+    import shell.Runtime;
     
     /**
      * Main class serving www.as3lang.org
@@ -62,13 +61,47 @@ package org.as3lang.www
             map( "/hello/world", onHelloWorld, RequestMethod.GET );
             map( "/cgi/env", onCGIEnv, RequestMethod.GET );
             map( "/my/request", onMyRequest, RequestMethod.GET );
+            map( "/となりのトトロ", onMyNeighborTotoro, RequestMethod.GET );
             
             /* Note:
                While working locally if you need to test
                a particular route you can override it here
             */
-            //uri.path = "/hello/world";
+            //destination = "/hello/world";
+            //destination = "/となりのトトロ"; 
         }
+        
+        /* customisation of our gateway */
+        
+        override protected function buildDestination():String
+        {
+            /* Note:
+               with destinations like "/となりのトトロ"
+               apache will URLencode it to
+               "/%E3%81%A8%E3%81%AA%E3%82%8A%E3%81%AE%E3%83%88%E3%83%88%E3%83%AD"
+               and so if you check the route using UTF-8
+               eg. map( "/となりのトトロ", ... )
+               the route will never be found and generate a 404 error
+               
+               so to support UTF-8 in the derstination and your routes
+               you will need to override the destination getter
+               to decodeURIComponent() before returning it
+            */
+            var dest:String = _apache.requestURI;
+                dest        = decodeURIComponent( dest );
+            
+            return dest;
+        }
+        
+        public override function onEveryResponse( response:Response ):Response
+        {
+            var header:Header = new HttpHeader( "X-Powered-By", "redtamarin/" + Runtime.redtamarin );
+            CommonResponse(response).addHeader( header, true );
+            return response;
+        }
+        
+        
+        /* our responses */
         
         public function onRoot( r:Route ):Response
         {
@@ -82,6 +115,7 @@ package org.as3lang.www
                 home += "/hello/world \n";
                 home += "/cgi/env \n";
                 home += "/my/request \n";
+                home += "/となりのトトロ \n"
             
                 page.body  = home;
             return page;
@@ -155,6 +189,14 @@ package org.as3lang.www
             
                 page.body  = tmp;
             
+            return page;
+        }
+        
+        public function onMyNeighborTotoro( r:Route ):Response
+        {
+            var page:Response = new TextResponse();
+                page.body  = "となりのトトロ\n";
+                page.body += "My Neighbor Totoro";
             return page;
         }
         
