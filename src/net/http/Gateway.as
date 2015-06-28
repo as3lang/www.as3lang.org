@@ -32,13 +32,20 @@ package net.http
         function set errors( value:String ):void;
         
         /**
-         * The destination is the raw URL request received by the server.
+         * The destination path of the request received by the server.
+         * 
+         * <p>
+         * This is only the path element of the URL, not the full URL.
+         * 
+         * for example with <code>http://www.as3lang.org/some/path</code>
+         * we would want to keep only the <code>/some/path</code> part.
+         * </p>
          * 
          * <p>
          * Depending on how you want your Gateway to work the logic
-         * to build this URL can differ.
+         * to define this path can differ.
          * 
-         * This URL can also be influenced by the server forwarding the request.
+         * See the implementations code for details.
          * </p>
          */
         function get destination():String;
@@ -49,6 +56,21 @@ package net.http
          * Indicates if the current request is authorized to run or not.
          */
         function authorized():Boolean;
+        
+        /**
+         * Allow to catch errors thrown by the run() method.
+         */ 
+        function onErrorCaught( e:Error ):void;
+        
+        /**
+         * The default Response to send if we fail to generate a response.
+         */
+        function onFailedResponse():Response;
+        
+        /**
+         * Allows to update the response in case of errors.
+         */
+        function onServerErrors( response:Response ):void;
         
         /**
          * Run the current server request.
