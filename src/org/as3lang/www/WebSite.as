@@ -68,7 +68,8 @@ package org.as3lang.www
                a particular route you can override it here
             */
             //destination = "/hello/world";
-            //destination = "/となりのトトロ"; 
+            //destination = "/となりのトトロ";
+            //destination = "/%91";
         }
         
         /* customisation of our gateway */
@@ -83,12 +84,29 @@ package org.as3lang.www
                eg. map( "/となりのトトロ", ... )
                the route will never be found and generate a 404 error
                
-               so to support UTF-8 in the derstination and your routes
+               so to support UTF-8 in the destination and your routes
                you will need to override the destination getter
                to decodeURIComponent() before returning it
+            
+               but there is a catch, some requestURI can throw an error
+               when you try to decodeURIComponent() them, and so we need
+               to test those cases and ignore them.
             */
             var dest:String = _apache.requestURI;
-                dest        = decodeURIComponent( dest );
+            var decoded:String = "";    
+            
+            try
+            {
+                decoded = decodeURIComponent( dest );
+                dest = decoded;
+            }
+            catch( e:Error )
+            {
+                /* If we arrive here that means we caught a
+                   URIError: Error #1052: Invalid URI passed to decodeURIComponent function.
+                   and so we leave the destination "as is" and don't try to decode it
+                */
+            }
             
             return dest;
         }
