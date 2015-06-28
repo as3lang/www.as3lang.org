@@ -1,6 +1,5 @@
 package net.http.web
 {
-    import net.URI;
     import net.http.Request;
     import net.http.Response;
     import net.http.StatusCode;
@@ -22,8 +21,7 @@ package net.http.web
     public class WebGateway extends CommonGateway implements Router
     {
         
-        private var _apache:ApacheEnvironment;
-        private var _uri:URI;
+        protected var _apache:ApacheEnvironment;
         private var _notfound:Rule;
         private var _router:Router;
         
@@ -32,43 +30,29 @@ package net.http.web
             super();
             
             _apache   = new ApacheEnvironment();
-            _uri      = null;
             _notfound = new NotFoundRule( "{404}", onNotFound );
             _router   = new CommonRouter( _notfound );
             
             _destination = buildDestination();
         }
         
+        /** @inheritDoc */
         override protected function buildDestination():String
         {
-            var dest:String = "";
-                dest += _apache.requestScheme + "://"; // ex: http://
-                dest += _apache.httpHost;              // ex: www.as3lang.org
-                dest += _apache.requestURI;            // ex: /some/path
+            /* Note:
+               With other HTTP server it could change
+               eg. nginx, IIS, etc. may have different env vars
             
-            /* If the env vars are not available
-               we default to the empty string
+               Here we decide to took the Apache env
+               because we want to operate as one app
+               that handle many URLs with a router
             */
-            if( dest == "://" )
-            {
-                dest = "";
-            }
+            // 3. Apache env POV
+            var dest:String = _apache.requestURI;
             
             return dest;
         }
         
-        /**
-         * 
-         */
-        public function get uri():URI
-        {
-            if( !_uri )
-            {
-                _uri = new URI( destination );
-            }
-            
-            return _uri;
-        }
         
         /** @inheritDoc */
         public function map( route:String, callback:Function,
@@ -117,17 +101,57 @@ package net.http.web
             return _router.list( method );
         }
         
-        
+        /**
+         * Allows to check out all the requests received to the gateway
+         * 
+         * example:
+         * you want to check if the user has a Google Analytics ID
+         * 
+         * <listing>
+         * public override function onEveryRequest( request:Request ):Request
+         * {
+         *     var cr:CommonRequest = request as CommonRequest;
+         *     if( cr.hasHeader( "Cookie" ) )
+         *     {
+         *         var cookie:Header = cr.getHeader( "Cookie" );
+         *         if( cookie.value.indexOf( "_ga" ) > -1 )
+         *         {
+         *             // retrieve the Google Analytics ClientID
+         *         }
+         *     }
+         * }
+         * </listing>
+         */
         public function onEveryRequest( request:Request ):Request
         {
+            // by default we leave the request untouched
             return request;
         }
-        
+
+        /**
+         * Allows to update all the reponses sent from the gateway
+         * 
+         * example:
+         * you want to add a header to all outgoing responses
+         * 
+         * <listing>
+         * public override function onEveryResponse( response:Response ):Response
+         * {
+         *     var header:Header = new HttpHeader( "X-Powered-By", "redtamarin/" + Runtime.redtamarin );
+         *     CommonResponse(response).addHeader( header, true );
+         *     return response;
+         * }
+         * </listing>
+         */
         public function onEveryResponse( response:Response ):Response
         {
+            // by default we leave the response untouched
             return response;
         }
         
+        /**
+         * Allows to customise the "not authorized" response.
+         */
         public function onNotAuthorized( r:Route ):Response
         {
             var page:Response = new TextResponse();
@@ -137,6 +161,9 @@ package net.http.web
             return page;
         }
         
+        /**
+         * Allows to customise the "not found" response.
+         */
         public function onNotFound( r:Route ):Response
         {
             var method:String = r.method;
@@ -150,7 +177,7 @@ package net.http.web
             return page;
         }
         
-        
+        /** @inheritDoc */
         public override function apply( request:Request ):Response
         {
             if( !authorized() )
@@ -159,7 +186,7 @@ package net.http.web
             }
             
             request = onEveryRequest( request );
-            var response:Response = route( this.uri.path, request.method );
+            var response:Response = route( destination, request.method );
             return onEveryResponse( response );
         }
     }
