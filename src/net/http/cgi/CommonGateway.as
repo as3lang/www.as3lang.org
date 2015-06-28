@@ -37,6 +37,9 @@ package net.http.cgi
             _request     = null;
         }
         
+        /**
+         * Build the destination or URL path of the gateway.
+         */
         protected function buildDestination():String
         {
             /* We need to build a URL for the request
@@ -77,13 +80,42 @@ package net.http.cgi
             http://www.as3lang.org/index.abc/test123/
             PATH_INFO = /test123/
             URL = http://www.as3lang.org/test123/
+            
+            Here the destination should only keep the path element of the URL
+            in short
+            
+            1. server POV
+            destination = SCRIPT_NAME
+            
+            2. CGI POV
+            destination = PATH_INFO
+            
+            by default, we use the server POV
+            eg. the CGI program is one resource among others
+            and you could have different programs
+            
+            for ex:
+            http://www.as3lang.org/index.abc
+            http://www.as3lang.org/test.abc
+            http://www.as3lang.org/some/path/calendar.abc
+            etc.
+            
+            If you do some mod_rewrite and other redirects
+            overwrite the getter to change the logic to use PATH_INFO
+            
+            example:
+            override protected function buildDestination():String
+            {
+                 return _env.pathInfo;
+            }
             */
             
-            // for now we keep it simple
-            var dest:String = "";
-                dest += "http://";
-                dest += _env.serverName;
-                dest +=_env.scriptName;
+            // server POV
+            var dest:String = _env.scriptName;
+            
+            // CGI POV
+            //var dest:String = _env.pathInfo;
+            
             return dest;
         }
         
@@ -136,6 +168,76 @@ package net.http.cgi
                }
             */
             return true;
+        }
+        
+        /** @inheritDoc */
+        public function onErrorCaught( e:Error ):void
+        {
+            /* By default we show a stacktrace of the error
+               at the top of the response
+            
+               you may want to change that, if so override
+               for example:
+               public override function onErrorCaught( e:Error ):void
+               {
+                   // save the error to a log file for example
+               }
+            */
+            // 0. generic message
+            //errors += "an error occured\n";
+            
+            // 1. simple
+            //errors += e.toString() + "\n";
+            
+            // 2. detailled
+            errors += e.getStackTrace() + "\n";
+            
+            // 3. not really useful now but good to know
+            //errors += Error.getErrorMessage( e.errorID ) + "\n";
+        }
+        
+        /** @inheritDoc */
+        public function onFailedResponse():Response
+        {
+            /* This is our default response when we failed
+               to get a response.
+            
+               Our Gateway can not not send back a response.
+            
+               If you need a fancier default response you can override it
+               example:
+               public override function onFailedResponse():Response
+               {
+                    // your own response definition here
+               }
+            */
+            var response:Response = new CommonResponse();
+              //response.contentType = "text/plain; charset=utf-8";
+                response.contentType = TEXT_UTF8.toString();
+                response.body = "nothing to display";
+            
+            return response;
+        }
+        
+        /** @inheritDoc */
+        public function onServerErrors( response:Response ):void
+        {
+            /* If the server encountered an error we can use
+               this decorator to modify the response
+               and for example: change the status,
+               add our own error message, etc.
+            
+               By default we will return an Error 500
+               if you need to change that, override
+               for example:
+               public override function onServerErrors( response:Response ):void
+               {
+                   response.status = StatusCode.fromCode( "404" ).toString();
+                   // etc.
+               }
+            */
+            response.status = StatusCode.INTERNAL_SERVER_ERROR.toString();
+            response.body = errors + "\r\n" + response.body;
         }
         
         /** @inheritDoc */
@@ -215,17 +317,7 @@ package net.http.cgi
             }
             catch( e:Error )
             {
-                // 0. generic message
-                //errors += "an error occured\n";
-                
-                // 1. simple
-                //errors += e.toString() + "\n";
-                
-                // 2. detailled
-                errors += e.getStackTrace() + "\n";
-                
-                // 3. not really useful now but good to know
-                //errors += Error.getErrorMessage( e.errorID ) + "\n";
+                onErrorCaught( e );
             }
             
             /* If we failed to obtain a response
@@ -233,10 +325,7 @@ package net.http.cgi
             */
             if( response == null )
             {
-                response = new CommonResponse();
-                //response.contentType = "text/plain; charset=utf-8";
-                response.contentType = TEXT_UTF8.toString();
-                response.body = "nothing to display";
+                response = onFailedResponse();
             }
             
             /* IMPORTANT:
@@ -256,8 +345,7 @@ package net.http.cgi
             */
             if( errors != "" )
             {
-                response.status = StatusCode.INTERNAL_SERVER_ERROR.toString();
-                response.body = errors + "\r\n" + response.body; 
+                onServerErrors( response );
             }
             
             /* If at this point the request is still not
