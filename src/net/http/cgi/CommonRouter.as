@@ -234,9 +234,9 @@ package net.http.cgi
                 return _route( route, _trace, request );
                 break;
             
-            case RequestMethod.GET:
-            case "":
-            default:
+                case RequestMethod.GET:
+                case "":
+                default:
                 _notfound.update( RequestMethod.GET );
                 return _route( route, _get, request );
             }
