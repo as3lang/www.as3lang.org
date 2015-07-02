@@ -54,12 +54,12 @@ A programming language
 
 #### What can we do with it ?
 
-Build software in large sense of the term.
+Build software in the large sense of the term.
 
 
 #### Do I need to compile it ?
 
-Yes, AS3 is in gneeral compiled to bytecode and executed by a runtime.
+Yes, AS3 is in general compiled to bytecode and executed by a runtime.
 
 
 #### What compilers are available ?
