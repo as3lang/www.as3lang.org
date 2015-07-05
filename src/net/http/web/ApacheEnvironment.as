@@ -111,5 +111,34 @@ package net.http.web
         public function get httpReferer():String { return _httpReferer; }
         public function get httpUserAgent():String { return _httpUserAgent; }
         
+        public function toString():String
+        {
+            var str:String = "";
+            
+            str += CONTEXT_DOCUMENT_ROOT + " = " + contextDocumentRoot + "\n";
+            str += CONTEXT_PREFIX + " = " + contextPrefix + "\n";
+            str += DOCUMENT_ROOT + " = " + documentRoot + "\n";
+            str += REDIRECT_QUERY_STRING + " = " + redirectQueryString + "\n";
+            str += REDIRECT_STATUS + " = " + redirectStatus + "\n";
+            str += REDIRECT_URL + " = " + redirectURL + "\n";
+            str += REQUEST_SCHEME + " = " + requestScheme + "\n";
+            str += REQUEST_URI + " = " + requestURI + "\n";
+            str += SCRIPT_FILENAME + " = " + scriptFilename + "\n";
+            str += SERVER_ADDR + " = " + serverAddress + "\n";
+            str += SERVER_ADMIN + " = " + serverAdmin + "\n";
+            str += SERVER_SIGNATURE + " = " + serverSignature + "\n";
+            
+            str += HTTP_ACCEPT + " = " + httpAccept + "\n";
+            str += HTTP_ACCEPT_ENCODING + " = " + httpAcceptEncoding + "\n";
+            str += HTTP_ACCEPT_LANGUAGE + " = " + httpAcceptLanguage + "\n";
+            str += HTTP_CACHE_CONTROL + " = " + httpCacheControl + "\n";
+            str += HTTP_CONNECTION + " = " + httpConnection + "\n";
+            str += HTTP_COOKIE + " = " + httpCookie + "\n";
+            str += HTTP_HOST + " = " + httpHost + "\n";
+            str += HTTP_REFERER + " = " + httpReferer + "\n";
+            str += HTTP_USER_AGENT + " = " + httpUserAgent + "\n";
+            
+            return str;
+        }
     }
 }
