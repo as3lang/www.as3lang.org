@@ -13,7 +13,9 @@
 
 		<pre>
 		<%if( buildinfo ) {%>
-			<%for( var i = 0; i < buildinfo.length; i++ ) { buildinfo[i][0] = buildinfo[i][1] }%>
+			<%for( var i = 0; i < buildinfo.length; i++ ) {%>
+			<%buildinfo[i][0] = buildinfo[i][1]%>
+			<%}%>
 		<%}%>
 		</pre>
 	<body>
