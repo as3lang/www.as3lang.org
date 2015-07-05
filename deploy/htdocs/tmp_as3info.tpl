@@ -13,9 +13,7 @@
 
 		<pre>
 		<% if( buildinfo && (buildinfo.length > 0) ) { %>
-			<% for( var i:uint = 0; i < buildinfo.length; i++ ) { %>
-				<% i %>
-			<% } %>
+			<% buildinfo.toString() %>
 		<% } %>
 		</pre>
 	<body>
