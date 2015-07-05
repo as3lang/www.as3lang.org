@@ -14,7 +14,7 @@
 		<pre>
 		<% if( buildinfo && (buildinfo.length > 0) ) { %>
 			<% for( var i:uint = 0; i < buildinfo.length; i++ ) { %>
-				<% buildinfo[i][0] %> = <% buildinfo[i][1] %>
+				<% i %>
 			<% } %>
 		<% } %>
 		</pre>
