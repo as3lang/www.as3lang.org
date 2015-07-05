@@ -12,9 +12,9 @@
 		<% body %>
 
 		<pre>
-		<% if( buildinfo && (buildinfo.length > 0) ) { %>
+		<%if( buildinfo && (buildinfo.length > 0) ) {%>
 			<% buildinfo.toString() %>
-		<% } %>
+		<%}%>
 		</pre>
 	<body>
 
