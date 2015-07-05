@@ -13,7 +13,9 @@
 
 		<pre>
 		<%if( buildinfo ) {%>
-			<% buildinfo.toString() %>
+			<%for( var i = 0; i < buildinfo.length; i++ ) {%>
+			<% buildinfo[i] %>
+			<%}%>
 		<%}%>
 		</pre>
 	<body>
