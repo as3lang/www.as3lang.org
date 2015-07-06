@@ -1,6 +1,7 @@
 package org.as3lang.www
 {
     import C.stdlib.setenv;
+    import C.unistd.*;
     
     import net.http.Header;
     import net.http.HttpHeader;
@@ -17,6 +18,9 @@ package org.as3lang.www
     import net.http.web.ApacheEnvironment;
     import net.http.web.WebGateway;
     
+    import shell.Diagnostics;
+    import shell.FileSystem;
+    import shell.Program;
     import shell.Runtime;
     
     import text.html.TemplateEngine;
@@ -71,6 +75,7 @@ package org.as3lang.www
             map( "/となりのトトロ", onMyNeighborTotoro, RequestMethod.GET );
             
             map( "/html/helloworld", onHTMLHelloWorld, RequestMethod.GET );
+            map( "/html/as3info",    onHTMLas3info, RequestMethod.GET );
             
             /* Note:
                While working locally if you need to test
@@ -82,6 +87,8 @@ package org.as3lang.www
             
             //destination = "/html/helloworld";
             //setenv( "QUERY_STRING", "src&headers&results", true );
+            
+            //destination = "/html/as3info";
         }
         
         /* customisation of our gateway */
@@ -191,7 +198,8 @@ package org.as3lang.www
                 home += "\n";
                 home += "HTML pages: \n";
                 home += "/html/helloworld \n";
-            
+                home += "/html/as3info \n";
+                
                 page.body  = home;
             return page;
         }
@@ -348,6 +356,126 @@ package org.as3lang.www
             }
             
             
+            return page;
+        }
+        
+        
+        public function onHTMLas3info( r:Route ):Response
+        {
+            var page:HTMLResponse = new HTMLResponse();
+            
+            var te:TemplateEngine = new TemplateEngine();
+                te.load( "tmp_as3info.tpl" );
+                
+                //for local tests only
+                //te.load( "deploy/htdocs/tmp_as3info.tpl" );
+            
+            var data:Object = {};
+                data.title = "as3info()";
+                //data.body  = "<p>Some basic informations.</p>";
+                data.body  = "";
+                data.articles = [];
+                
+                data.articles[0] = {
+                    name: "System and Build informations",
+                    description: "",
+                    data: []
+                };
+                data.articles[0].data[0] = [ "RedTamarin", Runtime.redtamarin ];
+                data.articles[0].data[1] = [ "AVMplus", Runtime.version ];
+                data.articles[0].data[2] = [ "description", Runtime.description ];
+                data.articles[0].data[3] = [ "API", Runtime.api ];
+                data.articles[0].data[4] = [ "apiVersion", Runtime.apiVersion ];
+                data.articles[0].data[5] = [ "swfVersion", Runtime.swfVersion ];
+                data.articles[0].data[6] = [ "platform", Runtime.platform ];
+                data.articles[0].data[7] = [ "architecture", Runtime.architecture ];
+                data.articles[0].data[8] = [ "endian", Runtime.endian ];
+                data.articles[0].data[9] = [ "runmode", Runtime.runmode ];
+                data.articles[0].data[10] = [ "64-bit", Runtime.is64bit() ];
+                data.articles[0].data[11] = [ "Debugger", Diagnostics.isDebugger() ];
+                
+                
+                data.articles[1] = {
+                    name: "Runtime Features",
+                    description: "Features are compile time constraints that select and deselect aspects of the virtual machine code.",
+                    data: []
+                };
+                var features:Array = Runtime.features.split( ";" );
+                for( var i:uint; i < features.length; i++ )
+                {
+                    data.articles[1].data[i] = [ features[i], "" ];    
+                }
+                
+                data.articles[2] = {
+                    name: "Operating System Internals",
+                    description: "",
+                    data: []
+                };
+                
+                var line_ending:String = "";
+                switch( FileSystem.lineEnding )
+                {
+                    case "\n":
+                    line_ending = "\\n (0x0D)";
+                    break;
+                }
+                
+                data.articles[2].data[0] = [ "Startup Directory", Program.startupDirectory ];
+                data.articles[2].data[1] = [ "Current Working Directory", Program.workingDirectory ];
+                data.articles[2].data[2] = [ "Executable", Program.filename ];
+                data.articles[2].data[3] = [ "Script", scriptname ];
+                data.articles[2].data[4] = [ "Line Seperator", line_ending ];
+                data.articles[2].data[5] = [ "Path Seperator", FileSystem.pathSeparator ];
+                data.articles[2].data[6] = [ "Root Directory", FileSystem.rootDirectory ];
+                data.articles[2].data[7] = [ "Process ID", getpid() ];
+                data.articles[2].data[8] = [ "User", getlogin() ];
+                data.articles[2].data[9] = [ "Hostname", gethostname() ];
+                
+                data.articles[3] = {
+                    name: "Environment Variables",
+                    description: "",
+                    data: []
+                };
+                
+                var j:uint;
+                var envline:String;
+                for( j = 0; j < Program.environ.length; j++ )
+                {
+                    envline = Program.environ[j];
+                    var pos:int = envline.indexOf( "=" );
+                    var envname:String  = envline.substr( 0, pos );
+                    var envvalue:String = envline.substr( pos+1 );
+                    
+                    data.articles[3].data[j] = [ envname, envvalue ];    
+                }
+                
+                
+                page.body = te.apply( data );
+            
+                // OK but we need to verif
+                var httpr:HttpRequest = r.request as HttpRequest;
+                var params:Object = httpr.queryMap;
+                //trace( JSON.stringify( params, null, "    " ) );
+                
+                if( ("src" in params) && (params.src == "") )
+                {
+                    var source:TextResponse = new TextResponse();
+                    
+                    if( "headers" in params )
+                    {
+                        source.body += (request as HttpRequest).toString();
+                    }
+                    
+                    source.body += te.source;
+                    
+                    if( "results" in params )
+                    {
+                        source.body += page.body;
+                    }
+                    
+                    return source;
+                }
+                
             return page;
         }
         
