@@ -94,9 +94,10 @@ Really it's about if you post something on twitter/google+/facebook or any other
 
 In the same idea, once there is a blog, it would be simply about writing a blog post, I guess it would work as creating a pull request and adding `title_of_my_post.md` or something like that.
 
+<br>
+<br>
 
-
-All that said, I personally never built a community web site, my only rule is to do it using AS3 and I do hope some people will find soem time to help this and there :).
+All that said, I personally never built a community web site, my only rule is to do it using AS3 and I do hope some people will find some time to help this and there :).
 
 
 
