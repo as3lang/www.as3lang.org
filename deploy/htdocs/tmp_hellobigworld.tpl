@@ -21,8 +21,36 @@
 	<body>
 		<div class="uk-container uk-container-center">
 		
-			<div class="uk-block">
-				<% blob %>
+			<div class="uk-block uk-block-muted">
+
+				<div class="uk-container">
+
+					<div class="uk-grid uk-grid-match" data-uk-grid-margin>
+
+						<h3><% blob.title %></h3>
+
+						<div class="uk-width-medium-1-3">
+							<div class="uk-panel">
+								<p><% blob.col1 %></p>
+							</div>
+						</div>
+
+						<div class="uk-width-medium-1-3">
+							<div class="uk-panel">
+								<p><% blob2.col2 %></p>
+							</div>
+						</div>
+
+						<div class="uk-width-medium-1-3">
+							<div class="uk-panel">
+								<p><% blob.col3 %></p>
+							</div>
+						</div>
+
+					</div>
+
+				</div>
+
 			</div>
 		
 			<div class="uk-cover-background"
