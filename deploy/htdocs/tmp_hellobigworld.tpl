@@ -25,9 +25,9 @@
 
 				<div class="uk-container">
 
-					<div class="uk-grid uk-grid-match" data-uk-grid-margin>
+					<h3><% blob.title %></h3>
 
-						<h3><% blob.title %></h3>
+					<div class="uk-grid uk-grid-match" data-uk-grid-margin>
 
 						<div class="uk-width-medium-1-3">
 							<div class="uk-panel">
