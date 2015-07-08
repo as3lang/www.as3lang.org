@@ -21,7 +21,7 @@
 	<body>
 		<div class="uk-container uk-container-center">
 		
-			<div class="uk-block uk-block-muted">
+			<div class="uk-block uk-block-muted uk-margin-bottom">
 
 				<div class="uk-container">
 
