@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#see: http://iconhandbook.co.uk/reference/chart/
+
+#OSX: sudo port install ImageMagick
+#Ubuntu: sudo apt-get install imagemagick --fix-missing
+#Windows: install from binaries see: http://www.imagemagick.org/script/binary-releases.php
+
+#favicon.ico
+convert favicon1_16x16.png favicon1_24x24.png favicon1_32x32.png logo_64x64.png -colors 256 favicon.ico
+
+#apple iPhone/iPad
+convert logo_64x64.png -resize 60x60 touch-icon-iphone.png
+convert logo_128x128.png -resize 76x76 touch-icon-ipad.png
+convert logo_128x128.png -resize 120x120 touch-icon-iphone-retina.png
+convert logo_256x256.png -resize 152x152 touch-icon-ipad-retina.png
+
+#google TV
+convert logo_128x128.png -resize 96x96 favicon.png
+
+#windows 8
+convert logo_256x256.png -resize 144x144 pinned.png
+
+#move to htdocs root
+mv favicon.ico ../deploy/htdocs/
+mv favicon.png ../deploy/htdocs/
+mv pinned.png ../deploy/htdocs/
+mv touch-icon-iphone.png ../deploy/htdocs/
+mv touch-icon-ipad.png ../deploy/htdocs/
+mv touch-icon-iphone-retina.png ../deploy/htdocs/
+mv touch-icon-ipad-retina.png ../deploy/htdocs/
