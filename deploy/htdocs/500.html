@@ -3,23 +3,23 @@
     <head>
         <!-- head data -->
         <meta charset="utf-8">
-        <meta name="author" content="Zwetan Kjukov">
+        <meta name="author" content="as3lang community">
         <meta name="description" content="There is a problem with the server.">
         
         <title>as3lang - Error 500</title>
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <!--
+        
         <link rel="shortcut icon" href="/favicon.ico">
-        <link rel="icon" href="/static/favicon-32.png" sizes="32x32">
+        <link rel="icon" href="/static/logo-32.png" sizes="32x32">
         <link rel="apple-touch-icon" href="/touch-icon-iphone.png">
         <link rel="apple-touch-icon" href="/touch-icon-ipad.png" sizes="76x76">
         <link rel="apple-touch-icon" href="/touch-icon-iphone-retina.png" sizes="120x120">
         <link rel="apple-touch-icon" href="/touch-icon-ipad-retina.png" sizes="152x152">
         <meta name="msapplication-TileImage" content="/pinned.png">
-        <meta name="msapplication-TileColor" content="#ffcc00">
-         -->
+        <meta name="msapplication-TileColor" content="#f1463f">
+        
         
         <!-- uikit 2.21.0 - http://cdnjs.com/libraries/uikit  -->
         <link href="http://cdnjs.cloudflare.com/ajax/libs/uikit/2.21.0/css/uikit.min.css" rel="stylesheet" />
@@ -45,49 +45,80 @@
           }
         }
 
-        .uk-container-noborder { padding: 0; }
-
-        @media (min-width:480px)
-        {
-            .uk-container-noborder { padding: 0; }
-        }
-
-        @media (min-width:768px)
-        {
-            .uk-container-noborder { padding: 0 25px; }
-        }
-
-        .aa-placeholder-thin {
-            margin-top: 4px;
-            margin-bottom: 4px;
-            padding-top: 0px;
-
-        }
-
+        .aa-color-red { background-color: #f1463f; }
+        .aa-color-darkred { background-color: #c73e38; }
+        .aa-color-yellow { background-color: #ffcc00; }
+        .aa-color-darkyellow { background-color: #d2a903; }
         .aa-color-white { background-color: #ffffff; }
         .aa-color-cutter { background-color: #fff200; }
-        .aa-color-yellow { background-color: #ffcc00; }
-        .aa-color-pink { background-color: #ff00cc; }
         .aa-color-grey { background-color: gainsboro; }
         .aa-color-ghost { background-color: ghostwhite; }
-        .aa-color-cornsilk { background-color: cornsilk; }
-        .aa-color-lightyellow { background-color: lightyellow; }
-        .aa-color-red { background-color: #e81e25; }
-        .aa-color-neutralBlack { background-color: #231f20; }
         .aa-color-neutralBlackU { background-color: #4c4845; }
-        .aa-color-neutralBlackC { background-color: #222223; }
-        .aa-color-ral9011 { background-color: #27292b; }
 
-        .aa-link-admin {
-          color: ghostwhite;
-          text-decoration: none;
+        .aa-color-red-stripe
+        {
+          background: repeating-linear-gradient(
+            45deg,
+            #f1463f,
+            #f1463f 10px,
+            #c73e38 10px,
+            #c73e38 20px
+          );
         }
 
-        .aa-link-admin:hover ,
-        .aa-link-admin:focus {
-          color: #ffffff;
-          text-decoration: none;
-          outline: none;
+        .aa-color-red-stripe2x
+        {
+          background: repeating-linear-gradient(
+            45deg,
+            #f1463f,
+            #f1463f 10px,
+            #c73e38 10px,
+            #c73e38 20px
+          );
+        }
+
+        .aa-color-yellow-stripe
+        {
+          background: repeating-linear-gradient(
+            45deg,
+            #ffcc00,
+            #ffcc00 10px,
+            #d2a903 10px,
+            #d2a903 20px
+          );
+        }
+
+        .aa-color-yellow-stripe2x
+        {
+          background: repeating-linear-gradient(
+            45deg,
+            #ffcc00,
+            #ffcc00 20px,
+            #d2a903 20px,
+            #d2a903 40px
+          );
+        }
+
+        .aa-color-orange-stripe
+        {
+          background: repeating-linear-gradient(
+            45deg,
+            #ffcc00,
+            #ffcc00 10px,
+            #fcb712 10px,
+            #fcb712 20px
+          );
+        }
+
+        .aa-color-orange-stripe2x
+        {
+          background: repeating-linear-gradient(
+            45deg,
+            #ffcc00,
+            #ffcc00 20px,
+            #fcb712 20px,
+            #fcb712 40px
+          );
         }
 
         .aa-link-footer {
@@ -97,95 +128,9 @@
 
         .aa-link-footer:hover ,
         .aa-link-footer:focus {
-          color: #e81e25;
+          color: #f1463f;
           text-decoration: none;
           outline: none;
-        }
-
-        .aa-link-service:hover ,
-        .aa-link-service:focus {
-          text-decoration: none;
-          outline: none;
-        }
-
-        .aa-link-youtube ,
-        .aa-link-youtube:hover ,
-        .aa-link-youtube:focus {
-          color: #cd201f;
-        }
-
-        @media (min-width:480px)
-        {
-            .tab-icon-small { width: 16px; }
-        }
-
-        @media (min-width:768px)
-        {
-            .tab-icon-medium { width: 110px; }
-        }
-
-        .aa-margin-navigation {
-          padding-left: 0px;
-          padding-right: 2px;
-        }
-
-        .aa-tag {
-          display: inline-block;
-          padding: 1px 6px;
-          background: #00a8e6;
-          font-size: 10px;
-          font-weight: bold;
-          line-height: 14px;
-          color: #ffffff;
-          text-align: center;
-          vertical-align: middle;
-          text-transform: none;
-          border-radius: 4px;
-        }
-
-        .aa-tag-rect {
-          display: inline-block;
-          padding: 1px 6px;
-          background: #00a8e6;
-          font-size: 10px;
-          font-weight: bold;
-          line-height: 14px;
-          color: #ffffff;
-          text-align: center;
-          vertical-align: middle;
-          text-transform: none;
-        }
-
-        .aa-tag-header {
-          color: #ffffff;
-          background-color: rgba(0, 0, 0, 0.3);
-        }
-
-        .aa-tag-info {
-          color: #ffffff;
-          background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        .aa-tag-border {
-          border: 1px solid rgba(255, 255, 255, 0.6);
-        }
-
-        @media (min-width:480px)
-        {
-            //small
-            .adslot-hidden-small { display: none; }
-        }
-
-        @media (min-width:768px)
-        {
-            //medium
-            .adslot-hidden-medium { display: none; }
-        }
-
-        @media (min-width:960px)
-        {
-            //large
-            .adslot-hidden-large { display: none; }
         }
         </style>
 
@@ -197,7 +142,7 @@
             <div id="center-container" class="uk-container-1-1 uk-flex uk-flex-middle uk-flex-center aa-color-red" style="min-height: 512px;"><!-- center container 100%  -->
 
                     <div class="uk-container uk-container-center uk-text-center uk-margin-top"><!-- errors -->
-                    	<!-- <img src="/static/B-w-512.png" width="256" height="256" alt=""> -->
+                    	<img src="/static/logo_a-256.png" width="256" height="256" alt="">
                         <div class="uk-alert uk-alert-danger uk-margin-top uk-text-left">
                             <h1 class="uk-text-large uk-text-bold" style="font-size: 50px;">Error 500</h1>
                             <h3 class="uk-text-large uk-text-bold" style="font-size: 30px;">Internal server error</h3>
@@ -205,7 +150,7 @@
                         </div>
 
                     </div><!-- errors END -->
-
+                    
             </div><!-- center container 100% END -->
 
             <div id="clear-footer" class="uk-clear">
@@ -214,22 +159,22 @@
         </div><!-- global container END -->
 
 
-        <div id="global-footer" class="uk-container-1-1 uk-position-relative aa-color-grey" style="height: 120px;"><!-- container footer 100%  -->
+        <div id="global-footer" class="uk-container-1-1 uk-position-relative aa-color-darkred" style="height: 132px;"><!-- container footer 100%  -->
 
             <div class="uk-flex uk-flex-center aa-color-grey1">
 
-                <div class="uk-flex uk-flex-center uk-flex-middle uk-flex-space-between aa-color-cutter1" style="height: 104px;">
-                    <!-- <img src="/static/B-w-64.png" width="64" height="64" alt=""> -->
+                <div class="uk-flex uk-flex-center uk-flex-middle uk-flex-space-between" style="height: 92px;">
+                    <img src="/static/logo-64.png" width="64" height="64" alt="">
                     &nbsp;&nbsp;
                     <blockquote style="border-left: 5px solid #ffffff;">
                     	<p class="uk-text-bold" style="color: #ffffff;">ActionScript 3.0 is not dead, the server is</p>
-                    	<small class="uk-text-muted">zwetan</small>
+                    	<small class="uk-text-muted1">zwetan</small>
                     </blockquote>
                 </div>
 
             </div>
 
-            <div class="uk-flex uk-flex-bottom uk-flex-space-between aa-color-pink1" style="height: 16px;">
+            <div class="uk-flex uk-flex-bottom uk-flex-space-between" style="height: 40px; line-height: 80%;">
                 
                 <div class="uk-flex-left">
                     <a class="aa-link-footer" href="https://creativecommons.org/licenses/by/4.0/" target="_blank">
