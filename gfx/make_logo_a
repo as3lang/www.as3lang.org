@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#move to htdocs static
+cp logo_a_512x512.png ../deploy/htdocs/static/logo_a-512.png
+cp logo_a_256x256.png ../deploy/htdocs/static/logo_a-256.png
+cp logo_a_128x128.png ../deploy/htdocs/static/logo_a-128.png
+cp logo_a_64x64.png ../deploy/htdocs/static/logo_a-64.png
+cp logo_a_32x32.png ../deploy/htdocs/static/logo_a-32.png
