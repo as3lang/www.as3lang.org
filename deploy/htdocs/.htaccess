@@ -4,14 +4,13 @@ ErrorDocument 503 /maintenance.html
 
 RewriteEngine On
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^ index.abc [QSA,L]
-RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization},L]
-
 #RewriteCond %{REMOTE_ADDR} !^127\.0\.0\.1
 RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f
 RewriteCond %{DOCUMENT_ROOT}/maintenance.enable -f
 RewriteCond %{SCRIPT_FILENAME} !maintenance.html
 RewriteCond %{REQUEST_URI} !\.(jpe?g?|png|gif|css|js) [NC]
 RewriteRule ^.*$ /maintenance.html [R=503,L]
-    
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.abc [QSA,L]
+RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization},L]
