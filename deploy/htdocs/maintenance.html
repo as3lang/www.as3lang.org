@@ -10,7 +10,7 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        
+        <!-- favicons -->
         <link rel="shortcut icon" href="/favicon.ico?v=412">
         <link rel="icon" href="/static/favicon-32.png" sizes="32x32">
         <link rel="apple-touch-icon" href="/touch-icon-iphone.png">
@@ -20,17 +20,11 @@
         <meta name="msapplication-TileImage" content="/pinned.png">
         <meta name="msapplication-TileColor" content="#f1463f">
         
-        
         <!-- uikit 2.21.0 - http://cdnjs.com/libraries/uikit  -->
         <link href="http://cdnjs.cloudflare.com/ajax/libs/uikit/2.21.0/css/uikit.min.css" rel="stylesheet" />
         <link href="http://cdnjs.cloudflare.com/ajax/libs/uikit/2.21.0/css/uikit.almost-flat.min.css" rel="stylesheet" />
 
-        <!-- jQuery 2.1.4 - https://developers.google.com/speed/libraries/devguide#jquery  -->
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-
-        <!-- uikit 2.21.0 - http://cdnjs.com/libraries/uikit  -->
-        <script src="http://cdnjs.cloudflare.com/ajax/libs/uikit/2.21.0/js/uikit.min.js"></script>
-
+        <!-- inline -->
         <style>
         .uk-container-1-1 {
           -moz-box-sizing: border-box;
@@ -132,16 +126,55 @@
           text-decoration: none;
           outline: none;
         }
+
+        #global-container
+        {
+          min-height: 99%;
+          background-color: #fff200;
+        }
+
+        #container-100
+        {
+          background-color: #ffffff;
+        }
+
+        #container-center-100
+        {
+          /*aa-color-orange-stripe*/
+          background: repeating-linear-gradient(
+            45deg,
+            #ffcc00,
+            #ffcc00 10px,
+            #fcb712 10px,
+            #fcb712 20px
+          );
+        }
+
+        #global-footer
+        {
+          height: 132px;
+          background-color: #ffcc00;
+        }
         </style>
 
     </head>
-    <body class="uk-height-1-1 aa-color-cutter">
+    <body class="uk-height-1-1 aa-color-cutter1">
 
-        <div id="global-container" class="uk-position-relative aa-color-cutter" style="min-height: 99%;"><!-- global container -->
+        <noscript>
+            <div style="height: 10px;">
+            </div>
+            <div class="uk-alert uk-alert-warning uk-margin">
+                <i class="uk-icon-warning"></i> The site works best with JavaScript enabled.
+            </div>
+        </noscript>
 
-            <div id="center-container" class="uk-container-1-1 uk-flex uk-flex-middle uk-flex-center aa-color-orange-stripe"><!-- center container 100%  -->
+        <!-- global container -->
+        <div id="global-container" class="uk-position-relative">
+            <!-- container center 100%  -->
+            <div id="container-center-100" class="uk-container-1-1 uk-flex uk-flex-middle uk-flex-center">
 
-                    <div class="uk-container uk-container-center uk-text-center uk-margin-top"><!-- maintenance -->
+                    <!-- maintenance -->
+                    <div class="uk-container uk-container-center uk-text-center uk-margin-top">
                       
                         <div class="uk-alert uk-alert-warning uk-margin-top uk-text-left uk-text-top" style="max-width: 512px;">
                             <div class="uk-grid" data-uk-grid-margin>
@@ -155,17 +188,20 @@
                             </div>
                         </div>
 
-                    </div><!-- maintenance END -->
+                    </div>
+                    <!-- maintenance END -->
 
-            </div><!-- center container 100% END -->
+            </div>
+            <!-- container center 100% END -->
 
             <div id="clear-footer" class="uk-clear">
             </div>
 
-        </div><!-- global container END -->
+        </div>
+        <!-- global container END -->
 
-
-        <div id="global-footer" class="uk-container-1-1 uk-position-relative aa-color-yellow" style="height: 132px;"><!-- container footer 100%  -->
+        <!-- container footer 100%  -->
+        <div id="global-footer" class="uk-container-1-1 uk-position-relative">
 
             <div class="uk-flex uk-flex-center aa-color-grey1">
 
@@ -190,30 +226,14 @@
 
             </div>
 
-        </div><!-- container footer 100% END -->
+        </div>
+        <!-- container footer 100% END -->
 
-        <!-- main -->
-        <script>
-        var onStart = function()
-        {
-            $( ".aa-script" ).removeClass( "aa-script" );
-            
-            var footerH = $( "#global-footer" ).height();
-            $( "#clear-footer" ).height( footerH );
-            $( "#global-container" ).css( "margin-bottom", "-" + footerH + "px" );
-            $( "#center-container" ).height(  $( window ).height() - footerH );
-            
-        }
+        <!-- jQuery 2.1.4 - https://developers.google.com/speed/libraries/devguide#jquery  -->
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
-        var onResize = function()
-        {
-            var footerH = $( "#global-footer" ).height();
-            $( "#center-container" ).height(  $( window ).height() - footerH );
-        }
-
-        $( window ).ready( onStart );
-        $( window ).resize( onResize );
-        </script>
+        <!-- uikit 2.21.0 - http://cdnjs.com/libraries/uikit  -->
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/uikit/2.21.0/js/uikit.min.js"></script>
 
         <!-- google analytics -->
         <script>
@@ -224,6 +244,29 @@
 
         ga('create', 'UA-94526-32', 'auto');
         ga('send', 'pageview');
+        </script>
+
+        <!-- main -->
+        <script>
+        var onStart = function()
+        {
+            $( ".aa-script" ).removeClass( "aa-script" );
+            
+            var footerH = $( "#global-footer" ).height();
+            $( "#clear-footer" ).height( footerH );
+            $( "#global-container" ).css( "margin-bottom", "-" + footerH + "px" );
+            $( "#container-center-100" ).height(  $( window ).height() - footerH );
+            
+        }
+
+        var onResize = function()
+        {
+            var footerH = $( "#global-footer" ).height();
+            $( "#container-center-100" ).height(  $( window ).height() - footerH );
+        }
+
+        $( window ).ready( onStart );
+        $( window ).resize( onResize );
         </script>
 
     </body>
