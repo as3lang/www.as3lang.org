@@ -149,8 +149,14 @@ package text.html
          */
         public function loadFromPath( name:String ):Boolean
         {
-            var path:String = _path;
-            path  = FileSystem.ensureEndsWithSeparator( path );
+            var path:String = "";
+            
+            if( _path != "" )
+            {
+                path = _path;
+                path = FileSystem.ensureEndsWithSeparator( path );
+            }
+            
             path += name;
             
             return load( path );
