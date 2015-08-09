@@ -13,6 +13,7 @@ package org.as3lang.www
     import net.http.cgi.CommonEnvironment;
     import net.http.cgi.CommonResponse;
     import net.http.responses.HTMLResponse;
+    import net.http.responses.HTMLTemplateResponse;
     import net.http.responses.TextResponse;
     import net.http.router.Route;
     import net.http.web.ApacheEnvironment;
@@ -68,7 +69,9 @@ package org.as3lang.www
         {
             super();
             
-            map( "/", onRoot, RequestMethod.GET );
+            //map( "/", onRoot, RequestMethod.GET );
+            map( "/", Home.onRoot, RequestMethod.GET );
+            
             map( "/hello/world", onHelloWorld, RequestMethod.GET );
             map( "/cgi/env", onCGIEnv, RequestMethod.GET );
             map( "/my/request", onMyRequest, RequestMethod.GET );
@@ -76,6 +79,7 @@ package org.as3lang.www
             
             map( "/html/helloworld", onHTMLHelloWorld, RequestMethod.GET );
             map( "/html/as3info",    onHTMLas3info, RequestMethod.GET );
+            map( "/html/another",    onHTMLanother, RequestMethod.GET );
             
             /* Note:
                While working locally if you need to test
@@ -89,6 +93,7 @@ package org.as3lang.www
             //setenv( "QUERY_STRING", "src&headers&results", true );
             
             //destination = "/html/as3info";
+            //destination = "/html/another";
         }
         
         /* customisation of our gateway */
@@ -199,6 +204,7 @@ package org.as3lang.www
                 home += "HTML pages: \n";
                 home += "/html/helloworld \n";
                 home += "/html/as3info \n";
+                home += "/html/another \n";
                 
                 page.body  = home;
             return page;
@@ -475,6 +481,44 @@ package org.as3lang.www
                     
                     return source;
                 }
+                
+            return page;
+        }
+        
+        public function onHTMLanother( r:Route ):Response
+        {
+            /* The same as above but more convenient
+               2 things to notice too
+               - we can have deep nested object for the data
+               - in the template we use dot notation, for ex: <% blob.title %>
+            */
+            var page:HTMLTemplateResponse = new HTMLTemplateResponse();
+                page.templateName = "tmp_hellobigworld.tpl";
+                //page.templateName = "deploy/htdocs/tmp_hellobigworld.tpl";
+            
+            var data:Object = {};
+                data.title = "Flash";
+                
+                data.blob  = {};
+                data.blob.title = "The Flash";
+                data.blob.col1  = "is a fictional superhero appearing in American comic books published by DC Comics.";
+                data.blob.col1 += "Created by writer Gardner Fox and artist Harry Lampert, the original Flash first appeared in Flash Comics #1 (January 1940).";
+                data.blob.col1 += "";
+                data.blob.col2  = "Nicknamed the \"Scarlet Speedster\", the \"Crimson Comet\" ,\"The Blur\", and \"The Streak\" all incarnations of the Flash possess \"super speed\", ";
+                data.blob.col2 += "which includes the ability to run and move extremely fast, use superhuman reflexes, and seemingly violate certain laws of physics.";
+                data.blob.col2 += "";
+                data.blob.col3  = "Thus far, four different characters—each of whom somehow gained the power of \"super-speed\"—have assumed the identity of the Flash: ";
+                data.blob.col3 += "Jay Garrick (1940–present), Barry Allen (1956–1985, 2008–present), Wally West (1986–2006, 2007–2012, 2013–present), ";
+                data.blob.col3 += "and Bart Allen (2006–2007). Before Wally and Bart's ascension to the mantle of the Flash, they were both Flash protégés ";
+                data.blob.col3 += "under the same name Kid Flash (Bart was also known as Impulse).";
+                data.blob.col3 += "";
+                
+                
+                data.image = "/static/sample1/my_desktop.png";
+                data.body  = "<p>Stay fresh, stay flashy :p</p>";
+                
+            
+                page.data = data;
                 
             return page;
         }
