@@ -35,7 +35,7 @@ package org.as3lang.www.data
                               navigation:String = "",
                               content:String = "",
                               footer:String = "",
-                              javascript:String )
+                              javascript:String = "" )
         {
             super();
             
