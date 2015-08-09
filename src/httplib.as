@@ -45,6 +45,7 @@ include "net/http/cgi/CommonRouter.as";
 include "net/http/responses/TextResponse.as";
 include "net/http/responses/HTMLResponse.as";
 include "net/http/responses/ByteArrayResponse.as";
+include "net/http/responses/HTMLTemplateResponse.as";
 
 include "net/http/web/ApacheEnvironment.as";
 include "net/http/web/WebGateway.as";
