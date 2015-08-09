@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" class="uk-height-1-1">
+    <head>
+
+        <!-- head data -->
+        <meta charset="utf-8">
+        <meta name="author" content="<%page.author%>">
+        <meta name="description" content="<%page.description%>">
+
+        <title><%page.title%></title>
+
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<%page.favicons%>
+
+<%page.stylesheet%>
+
+    </head>
+
+    <body class="uk-height-1-1 aa-color-cutter">
+
+        <noscript>
+            <div style="height: 10px;">
+            </div>
+            <div class="uk-alert uk-alert-warning uk-margin">
+                <i class="uk-icon-warning"></i> The site works best with JavaScript enabled.
+            </div>
+        </noscript>
+
+    	<!-- global container -->
+        <div id="global-container" class="uk-position-relative">
+			<!-- container center 100%  -->
+			<div id="container-center-100" class="uk-container-1-1 uk-position-relative">
+
+                    <!-- navigation -->
+<%page.navigation%>
+                    <!-- navigation END -->
+
+                    <!-- sections -->
+<%page.content%>
+                    <!-- sections END -->
+
+            </div>
+            <!-- container center 100% END -->
+            <div id="clear-footer" class="uk-clear">
+            </div>
+        </div>
+        <!-- global container END -->
+
+
+        <!-- container footer 100%  -->
+        <div id="global-footer" class="uk-container-1-1 uk-position-relative">
+			<!-- footer -->
+<%page.footer%>
+			<!-- footer END -->
+        </div>
+        <!-- container footer 100% END -->
+
+<%page.javascript%>
+
+    </body>
+</html>
