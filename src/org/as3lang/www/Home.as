@@ -16,6 +16,7 @@ package org.as3lang.www
             super();
         }
         
+        //utility function
         public static function loadDataPart( name:String ):String
         {
             var path:String = "/home/vhosts/as3lang.org/www/data/templates/parts/";
@@ -43,7 +44,7 @@ package org.as3lang.www
                 data.javascript = loadDataPart( "javascript.html" );
                 
                 /* for now we don't show a navigation
-                   but if we did, we probably dod that in a WebModule
+                   but if we did, we probably do that in a WebModule
                 */
                 //data.navigation
                 
