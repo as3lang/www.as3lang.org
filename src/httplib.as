@@ -49,5 +49,7 @@ include "net/http/responses/HTMLTemplateResponse.as";
 
 include "net/http/web/ApacheEnvironment.as";
 include "net/http/web/WebGateway.as";
+include "net/http/web/WebPage.as";
+include "net/http/web/WebModule.as";
 
 "httplib 0.2";
