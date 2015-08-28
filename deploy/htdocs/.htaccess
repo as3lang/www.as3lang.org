@@ -11,6 +11,8 @@ RewriteCond %{SCRIPT_FILENAME} !maintenance.html
 RewriteCond %{REQUEST_URI} !\.(jpe?g?|png|gif|css|js) [NC]
 RewriteRule ^.*$ /maintenance.html [R=503,L]
 
+RewriteCond %{HTTP:Authorization} ^(.*)
+RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^ index.abc [QSA,L]
-RewriteRule .* - [E=REMOTE_USER:%{HTTP:Authorization},L]
