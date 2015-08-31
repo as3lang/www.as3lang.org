@@ -231,6 +231,11 @@ package net.http
         public function set httpVersion( value:String ):void { _httpVersion = value; }
         
         /**
+         * Returns the list of internal Header objects.
+         */ 
+        public function get headersList():Array { return _headers; }
+        
+        /**
          * Returns a string formated list of all the headers contained
          * in this HTTP Message.
          */
