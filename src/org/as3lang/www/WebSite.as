@@ -3,6 +3,7 @@ package org.as3lang.www
     import C.stdlib.setenv;
     import C.unistd.*;
     
+    import net.http.Configuration;
     import net.http.Header;
     import net.http.HttpHeader;
     import net.http.HttpRequest;
@@ -17,6 +18,7 @@ package org.as3lang.www
     import net.http.responses.TextResponse;
     import net.http.router.Route;
     import net.http.web.ApacheEnvironment;
+    import net.http.web.WebConfig;
     import net.http.web.WebGateway;
     
     import shell.Diagnostics;
@@ -65,12 +67,13 @@ package org.as3lang.www
            we declare them in the constructor, so when we 
            call the run() method they are already connected.
         */
-        public function WebSite()
+        public function WebSite( config:Configuration = null )
         {
-            super();
+            super( config );
             
             //map( "/", onRoot, RequestMethod.GET );
             map( "/", Home.onRoot, RequestMethod.GET );
+            //map( "/", onCGIEnv, RequestMethod.GET );
             
             map( "/hello/world", onHelloWorld, RequestMethod.GET );
             map( "/cgi/env", onCGIEnv, RequestMethod.GET );
@@ -80,6 +83,25 @@ package org.as3lang.www
             map( "/html/helloworld", onHTMLHelloWorld, RequestMethod.GET );
             map( "/html/as3info",    onHTMLas3info, RequestMethod.GET );
             map( "/html/another",    onHTMLanother, RequestMethod.GET );
+            
+            map( "/test/session", Home.onTestSession, RequestMethod.GET );
+            map( "/test/session/clear", Home.onTestSessionClear, RequestMethod.GET );
+            map( "/test/session/destroy", Home.onTestSessionDestroy, RequestMethod.GET );
+            
+            map( "/test/auth/basic", Home.onTestBasicAuth, RequestMethod.GET );
+            
+            map( "/test/couchdb/direct", Home.onTestCouchDBDirect, RequestMethod.GET );
+            map( "/test/couchdb/informations", Home.onTestCouchDBInformations, RequestMethod.GET );
+            map( "/test/couchdb/databases", Home.onTestCouchDBDatabases, RequestMethod.GET );
+            map( "/test/couchdb/db1", Home.onTestCouchDBDatabase1, RequestMethod.GET );
+            map( "/test/couchdb/db/create", Home.onTestCouchDBDatabaseCreate, RequestMethod.GET );
+            map( "/test/couchdb/db/delete", Home.onTestCouchDBDatabaseDelete, RequestMethod.GET );
+            map( "/test/couchdb/db/savedoc1", Home.onTestCouchDBDatabaseSaveDocNoID, RequestMethod.GET );
+            map( "/test/couchdb/db/savedoc2", Home.onTestCouchDBDatabaseSaveDocWithID, RequestMethod.GET );
+            
+            
+            
+            
             
             /* Note:
                While working locally if you need to test
@@ -94,6 +116,7 @@ package org.as3lang.www
             
             //destination = "/html/as3info";
             //destination = "/html/another";
+            //destination = "/test/session";
         }
         
         /* customisation of our gateway */
