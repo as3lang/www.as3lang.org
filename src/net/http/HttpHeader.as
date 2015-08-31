@@ -18,6 +18,15 @@ package net.http
         public static const KEEP_ALIVE:String        = "Keep-Alive";
         public static const CLOSE:String             = "Close";
         
+        public static const COOKIE:String            = "Cookie";
+        public static const SET_COOKIE:String        = "Set-Cookie";
+        
+        public static const WWW_AUTHENTICATE:String  = "WWW-Authenticate";
+        public static const AUTHORIZATION:String     = "Authorization";
+        public static const REALM:String             = "realm";
+        public static const BASIC:String             = "Basic";
+        public static const DIGEST:String            = "Digest";
+        
         public static const USER_AGENT:String        = "User-Agent";
         
         public static const TRANSFER_ENCODING:String = "Transfer-Encoding";
@@ -72,6 +81,30 @@ package net.http
             }
             
             return str;
+        }
+        
+        public static function formatEnvName( name:String ):String
+        {
+            var str:String = "";
+            
+            var i:uint;
+            var len:uint = name.length;
+            var c:String;
+            for( i = 0; i < len; i++ )
+            {
+                c = name.charAt( i );
+                
+                if( c == "-" )
+                {
+                    c = "_";
+                }
+                
+                c = c.toUpperCase();
+                
+                str += c;
+            }
+            
+            return "HTTP_" + str;
         }
         
         private var _name:String;
