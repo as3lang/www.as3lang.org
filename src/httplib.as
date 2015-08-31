@@ -14,17 +14,30 @@ include "net/http/Header.as";
 include "net/http/Request.as";
 include "net/http/Response.as";
 include "net/http/Environment.as";
+include "net/http/Configuration.as";
 include "net/http/Gateway.as";
 
 include "net/http/StatusCode.as";
 include "net/http/RequestMethod.as";
+include "net/http/Cookie.as";
 
 include "net/http/HttpConnection.as";
 include "net/http/HttpHeader.as";
 include "net/http/HttpMessage.as";
 include "net/http/HttpRequest.as";
 include "net/http/HttpResponse.as";
+include "net/http/HttpAuthentication.as";
 include "net/http/HttpUtils.as";
+
+include "net/http/HttpServer.as";
+
+include "net/http/sessions/Session.as";
+include "net/http/sessions/SessionStorage.as";
+include "net/http/sessions/SessionStatus.as";
+include "net/http/sessions/FileSession.as";
+include "net/http/sessions/FileSessionStorage.as";
+include "net/http/sessions/SessionManager.as";
+
 
 include "net/http/router/Router.as";
 include "net/http/router/Route.as";
@@ -47,9 +60,10 @@ include "net/http/responses/HTMLResponse.as";
 include "net/http/responses/ByteArrayResponse.as";
 include "net/http/responses/HTMLTemplateResponse.as";
 
+include "net/http/web/WebConfig.as";
 include "net/http/web/ApacheEnvironment.as";
 include "net/http/web/WebGateway.as";
 include "net/http/web/WebPage.as";
 include "net/http/web/WebModule.as";
 
-"httplib 0.2";
+"httplib 0.4";
