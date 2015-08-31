@@ -1,5 +1,6 @@
 package net.http.router
 {
+    import net.http.Gateway;
     import net.http.Request;
     
     /**
@@ -32,6 +33,16 @@ package net.http.router
          * The Request object that triggered this route.
          */
         function get request():Request;
+        
+        /**
+         * The Gateway application context.
+         * 
+         * <p>
+         * Allows to give access to the Gateway itself but also
+         * common properties like configuration, state, session, etc.
+         * </p>
+         */ 
+        function get gateway():Gateway;
         
         /**
          * Returns a value for a named capture (eg. keyword) in a route.
