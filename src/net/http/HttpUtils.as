@@ -1,7 +1,6 @@
 package net.http
 {
-    import C.stdio.fread;
-    import C.stdio.stdin;
+    import C.stdio.*;
     
     import flash.utils.ByteArray;
     
@@ -79,6 +78,124 @@ package net.http
             return source;
         }
         
+        private static function _cleanupANSI( a:String, before:String = "「", after:String = "」" ):String
+        {
+            a += before + after;
+            
+            var str:String = "";
+            var re:RegExp = new RegExp( "(?P<word>.*?)" + "\\" + before + "(?P<ansi>.*?)" + "\\" + after , "g" );
+            var match:*;
+            
+            while( match = re.exec( a ) )
+            {
+                str += match.word;
+            }
+            
+            return str;
+        }
+        
+        private static function _removeANSI( ansi:String, before:String = "「", after:String = "」" ):String
+        {
+            if( ansi.indexOf( "\n" ) > -1 )
+            {
+                var lines:Array = ansi.split( "\n" );
+                var i:uint;
+                var len:uint = lines.length;
+                for( i = 0; i < len; i++ )
+                {
+                    lines[i] = _cleanupANSI( lines[i] );
+                }
+                return lines.join( "\n" );
+            }
+            else
+            {
+                return _cleanupANSI( ansi );
+            }
+        }
+        
+        public static function format_ansi( str:String, ansi:Boolean = true ):String
+        {
+            //encoding.ansi.AnsiString
+            var C:Class;
+            
+            try
+            {
+                C = getClassByName( "encoding.ansi.AnsiString" );
+            }
+            catch( e:Error )
+            {
+                //don't throw
+            }
+            
+            if( C )
+            {
+                var astr:* = new C( str );
+                if( ansi )
+                {
+                    return astr.toString();
+                }
+                else
+                {
+                    return astr.valueOf();
+                }
+            }
+            
+            return _removeANSI( str );
+        }
+        
+        public static function date_rfc1123( d:Date = null, zone:String = "GMT" ):String
+        {
+            // RFC 822: Sun, 16 Aug 15 00:20:57 GMT
+            // RFC 1123: Sun, 16 Aug 2015 00:20:57 GMT
+            
+            if( !d )
+            {
+                d = new Date();
+            }
+            
+            var zero:Function = function( n:* ):String
+            {
+                var s:String = String(n);
+                if( n < 10 ) { s = "0" + s; }
+                return s;
+            }
+            
+            var str:String = "";
+            var days:Array = [ "Sun","Mon","Tue","Wed","Thu","Fri","Sat" ];
+            var months:Array = [ "Jan","Feb","Mar","Apr",
+                                 "May","Jun","Jul","Aug",
+                                 "Sep","Oct","Nov","Dec" ];
+            
+            var dd:Number    = d.dayUTC;
+            var day:String   = days[ dd ];
+            var wkd:Number   = d.dateUTC;
+            
+            var mm:Number    = d.monthUTC;
+            var month:String = months[ mm ];
+            
+            var yyyy:Number = d.fullYearUTC;
+            //var year:String = String(yyyy);
+            //var yy:String = year.substr( 2 );
+            
+            var hh:Number  = d.hoursUTC;
+            var mn:Number  = d.minutesUTC;
+            var sec:Number = d.secondsUTC;
+            
+            str += day + ",";
+            str += " " + zero(wkd) + " " + month + " " + yyyy;
+            str += " " +zero(hh) + ":" + zero(mn) + ":" + zero(sec);
+            str += " " + zone;
+            
+            return str;
+        }
+        
+        public static function parse_date_rfc1123( str:String ):Date
+        {
+            var ms:Number = Date.parse( str );
+            var d:Date = new Date( ms );
+            return d;
+        }
+        
         
         public static function parse_header_line( str:String ):HttpHeader
         {
@@ -95,6 +212,12 @@ package net.http
             }
             
             return new HttpHeader( name, value );
+        }
+        
+        public static function parse_auth_header():Object
+        {
+            /* not implemented yet */
+            return null;
         }
         
         public static function parse_http_headers( str:String ):Array
@@ -282,6 +405,23 @@ package net.http
             return statusline;
         }
         
+        public static function parse_http_requestline( str:String ):Object
+        {
+            var requestline:Object = {};
+            requestline.method          = "";
+            requestline.path            = "";
+            requestline.protocolVersion = "";
+            
+            var pos1:int = str.indexOf( _SP );
+            var pos2:int = str.indexOf( _SP, pos1 + 1 );
+            
+            requestline.method          = str.substring( 0, pos1 );
+            requestline.path            = str.substring( pos1 + 1 , pos2 );
+            requestline.protocolVersion = str.substring( pos2 + 1 );
+            
+            return requestline;
+        }
+        
         public static function parse_http_status( str:String ):Object
         {
             var status:Object = {};
@@ -349,6 +489,103 @@ package net.http
             httpResponse.bodyBytes = body;
             
             return httpResponse;
+        }
+        
+        public static function parse_http_request( bytes:ByteArray, trimEOL:Boolean = true ):HttpRequest
+        {
+            var httpRequest:HttpRequest = new HttpRequest();
+            var requestLine:String = "";
+            var headerFields:String = "";
+            
+            var firstLine:Boolean = true;
+            
+            bytes.position = 0;
+            var line:String;
+            var body:ByteArray = new ByteArray();
+            
+            while( line != _CRLF )
+            {
+                line = read_line_until( bytes, _EOL );
+                
+                if( firstLine )
+                {
+                    requestLine = line;
+                    firstLine = false;
+                }
+                else
+                {
+                    headerFields += line;
+                }
+            }
+            
+            if( trimEOL )
+            {
+                requestLine   = _trim( requestLine, [ _CR, _LF ] );
+                headerFields = _trim( headerFields, [ _CR, _LF ] );
+            }
+            
+            var request:Object = parse_http_requestline( requestLine );
+            var rawpath:String = request.path;
+            var malformedPath:Boolean = false;
+            try
+            {
+                rawpath = decodeURIComponent( request.path );
+            }
+            catch( e:Error )
+            {
+                /* URIError: Error #1052: Invalid URI passed to decodeURIComponent function.
+                   for ex text with:
+                   /%91
+                   /%91?a=1&b=2
+                */
+                malformedPath = true;
+            }
+            
+            trace( "rawpath = " + rawpath );
+            if( malformedPath )
+            {
+                if( rawpath.indexOf( "?" ) > -1 )
+                {
+                    var tmp:Array = rawpath.split( "?" );
+                    httpRequest.set( tmp[0] );
+                    httpRequest.path        = tmp[0];
+                    httpRequest.query       = tmp[1];
+                }
+                else
+                {
+                    httpRequest.set( rawpath );
+                    httpRequest.path        = rawpath;
+                    httpRequest.query       = "";
+                }
+            }
+            else
+            {
+                var uri:URI = new URI( rawpath );
+                trace( "uri.path = " + uri.path );
+                
+                httpRequest.set( uri.path );
+                httpRequest.path        = uri.path;
+                httpRequest.query       = uri.query;
+            }
+            
+            httpRequest.method      = request.method;
+            httpRequest.httpVersion = request.protocolVersion;
+            
+            var headers:Array = parse_http_headers( headerFields );
+            var i:uint;
+            var len:uint = headers.length;
+            for( i = 0; i < len; i++ )
+            {
+                httpRequest.addHeader( headers[i] );
+            }
+            
+            var pos:uint = bytes.position;
+            bytes.readBytes( body );
+            
+            body.position = 0;
+            httpRequest.bodyBytes = body;
+            
+            return httpRequest;
         }
         
         public static function parse_content_chunked( content:String ):String
