@@ -1,5 +1,9 @@
 package net.http.web
 {
+    import net.http.Configuration;
+    import net.http.Gateway;
+    import net.http.HttpRequest;
+    import net.http.HttpResponse;
     import net.http.Request;
     import net.http.Response;
     import net.http.StatusCode;
@@ -10,6 +14,8 @@ package net.http.web
     import net.http.router.Router;
     import net.http.router.Rule;
     import net.http.router.rules.NotFoundRule;
+    import net.http.sessions.Session;
+    import net.http.sessions.SessionManager;
     
     /**
      * Our first advanced Gateway :).
@@ -20,18 +26,25 @@ package net.http.web
      */
     public class WebGateway extends CommonGateway implements Router
     {
-        
         protected var _apache:ApacheEnvironment;
         private var _notfound:Rule;
         private var _router:Router;
+        private var _sessionManager:SessionManager;
         
-        public function WebGateway()
+        public function WebGateway( config:Configuration = null )
         {
-            super();
+            if( !config )
+            {
+                var webconf:WebConfig = new WebConfig();
+                config = webconf;
+            }
             
-            _apache   = new ApacheEnvironment();
-            _notfound = new NotFoundRule( "{404}", onNotFound );
-            _router   = new CommonRouter( _notfound );
+            super( config );
+            
+            _apache         = new ApacheEnvironment();
+            _notfound       = new NotFoundRule( "{404}", onNotFound );
+            _router         = new CommonRouter( _notfound );
+            _sessionManager = new SessionManager( this );
             
             _destination = buildDestination();
         }
@@ -53,6 +66,23 @@ package net.http.web
             return dest;
         }
         
+        /**
+         * Gives access to the <code>SessionManager</code>.
+         * 
+         * @example Usage
+         * <listing>
+         * public static function onRoot( r:Route ):Response
+         * {
+         *     var config:WebConfig = r.gateway.config as WebConfig;
+         *     var sessions:SessionManager = WebGateway( r.gateway ).sessions;
+         *     var session:Session = sessions.getUserSession();
+         *         session.start();
+         * 
+         *     trace( "user session ID = " + session.id );
+         * }
+         * </listing>
+         */ 
+        public function get sessions():SessionManager { return _sessionManager; }
         
         /** @inheritDoc */
         public function map( route:String, callback:Function,
@@ -83,16 +113,13 @@ package net.http.web
         
         /** @inheritDoc */
         public function route( route:String,
-                               method:String = "", request:Request = null ):Response
+                               method:String = "", gateway:Gateway = null ):Response
         {
             /* Because we are inside a Gateway
-               we already have a request object
-               so we can automatically inject it
+               we can automatically inject ourselves
                into the router.
-            
-               eg. this.request
             */
-            return _router.route( route, method, this.request );
+            return _router.route( route, method, this );
         }
         
         /** @inheritDoc */
@@ -178,7 +205,8 @@ package net.http.web
         }
         
         /** @inheritDoc */
-        public override function apply( request:Request ):Response
+        //public override function apply( request:Request ):Response
+        public function apply2( request:Request ):Response
         {
             if( !authorized() )
             {
@@ -187,6 +215,55 @@ package net.http.web
             
             request = onEveryRequest( request );
             var response:Response = route( destination, request.method );
+            return onEveryResponse( response );
+        }
+        
+        //public function apply2( request:Request ):Response
+        public override function apply( request:Request ):Response
+        {
+            var webconfig:WebConfig = config as WebConfig; 
+            var sess:Session;
+            
+            if( !authorized() )
+            {
+                return onNotAuthorized( null );
+            }
+            
+            request = onEveryRequest( request );
+            
+            if( webconfig.sessionEnabled &&
+                webconfig.sessionAutoStart )
+            {
+                //auto start the session
+                var uuid:String = _sessionManager.findToken( request as HttpRequest );
+                sess = _sessionManager.getUserSession();
+                sess.start();
+            }
+            
+            var response:Response = route( destination, request.method );
+            
+            if( webconfig.sessionEnabled )
+            {
+                //auto stop the session
+                sess = _sessionManager.getUserSession();
+                if( sess )
+                {
+                    sess.stop();
+                }
+                
+                //if new we create the client cookie
+                if( _sessionManager.isNew )
+                {
+                    _sessionManager.applyTo( response as HttpResponse );
+                }
+                
+                //if destroyed we override the client cookie expires
+                if( _sessionManager.needCleanUp )
+                {
+                    _sessionManager.cleanUp( response as HttpResponse );
+                }
+            }
+            
             return onEveryResponse( response );
         }
     }
