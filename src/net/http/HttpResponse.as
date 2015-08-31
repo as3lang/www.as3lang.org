@@ -12,6 +12,11 @@ package net.http
      * A HTTP Response consist of a status line, a collection of header fields,
      * and an optional body.
      * </p>
+     * 
+     * <p>
+     * Because an <code>HttpResponse</code> always answer to an <code>HttpRequest</code>
+     * we 
+     * </p>
      */
     public class HttpResponse extends HttpMessage implements Response
     {
@@ -179,6 +184,73 @@ package net.http
             return str;
         }
         */
+        
+        public function toDebugString( ansi:Boolean = true, maxBody:int = -1 ):String
+        {
+            var str:String = "";
+            
+            str += "{「K」HttpResponse「W」" + "\n";
+            str += "  ├─「K 」 statusLine:「C 」 " + statusLine + "「!W 」\n";
+            str += "  ├─「K 」 headers:「C 」" + "\n";
+            
+            var i:uint;
+            var len:uint = _headers.length;
+            for( i = 0; i < len; i++ )
+            {
+                if( i == (len-1) )
+                {
+                    str += "  │   └─「K 」 ";   
+                }
+                else
+                {
+                    str += "  │   ├─「K 」 ";    
+                }
+                
+                str += _headers[i].name + "「C 」";
+                str += ":「W 」 ";
+                str += _headers[i].value + "「Y 」";
+                str += "\n";
+            }
+            str += "  └─「K 」 body:「C 」 " + _body.length + " bytes「R 」"  + "\n";
+            
+            var pre:String    = "      └─ 「K 」|「W」";
+            var prespc:String = "         │「W」";
+            
+            var lines:Array;
+            
+            if( maxBody > -1 )
+            {
+                var tmp:String = body.substr( 0, maxBody );
+                lines = tmp.split( "\n" );
+            }
+            else
+            {
+                lines = body.split( "\n" );
+            }
+            
+            var j:uint;
+            var l:uint = lines.length;
+            for( j = 0; j < l; j++ )
+            {
+                if( j == 0 )
+                {
+                    str += pre + lines[j] + "「Y 」" + "\n";
+                }
+                else
+                {
+                    str += prespc + lines[j] + "「Y 」" + "\n";   
+                }
+            }
+            
+            if( maxBody > -1 )
+            {
+                str +=  prespc + "...「K 」" + "\n";
+            }
+            
+            str += "}「K 」";
+            
+            return HttpUtils.format_ansi( str, ansi );
+        }
         
         protected function toStringInternal( fullResponse:Boolean = false ):String
         {
