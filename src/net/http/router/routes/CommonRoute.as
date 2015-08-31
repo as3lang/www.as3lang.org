@@ -1,5 +1,6 @@
 package net.http.router.routes
 {
+    import net.http.Gateway;
     import net.http.Request;
     import net.http.router.Route;
     
@@ -8,17 +9,17 @@ package net.http.router.routes
         
         private var _method:String;
         private var _value:String;
-        private var _request:Request;
+        private var _gateway:Gateway;
         protected var _captures:Array;
         
         public function CommonRoute( value:String,
-                                     method:String = "", request:Request = null )
+                                     method:String = "", gateway:Gateway = null )
         {
             super();
             
             _value    = value;
             _method   = method;
-            _request  = request;
+            _gateway  = gateway;
             _captures = [];
         }
         
@@ -29,7 +30,10 @@ package net.http.router.routes
         public function get method():String { return _method; }
         
         /** @inheritDoc */
-        public function get request():Request { return _request; }
+        public function get request():Request { return _gateway.request; }
+        
+        /** @inheritDoc */
+        public function get gateway():Gateway { return _gateway; }
         
         /** @inheritDoc */
         public function get captures():Array { return _captures; }
