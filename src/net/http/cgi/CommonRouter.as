@@ -1,5 +1,6 @@
 package net.http.cgi
 {
+    import net.http.Gateway;
     import net.http.Request;
     import net.http.RequestMethod;
     import net.http.Response;
@@ -96,7 +97,7 @@ package net.http.cgi
             return false;
         }
         
-        private function _route( route:String, data:Array, request:Request ):Response
+        private function _route( route:String, data:Array, gateway:Gateway ):Response
         {
             var r:Route;
             var rule:Rule;
@@ -105,12 +106,12 @@ package net.http.cgi
             {
                 if( rule.matches( route ) )
                 {
-                    r = rule.execute( route, request );
+                    r = rule.execute( route, gateway );
                     return rule.call( r );
                 }
             }
             
-            r = _notfound.execute( route, request );
+            r = _notfound.execute( route, gateway );
             return _notfound.call( r );
         }
         
@@ -199,7 +200,7 @@ package net.http.cgi
         
         /** @inheritDoc */
         public function route( route:String,
-                               method:String = "", request:Request = null ):Response
+                               method:String = "", gateway:Gateway = null ):Response
         {
             /* Note:
                each time we recevie a route the method can be different
@@ -211,34 +212,34 @@ package net.http.cgi
             {
             
                 case RequestMethod.OPTIONS:
-                return _route( route, _options, request );
+                return _route( route, _options, gateway );
                 break;
             
                 case RequestMethod.HEAD:
-                return _route( route, _head, request );
+                return _route( route, _head, gateway );
                 break;
             
                 case RequestMethod.POST:
-                return _route( route, _post, request );
+                return _route( route, _post, gateway );
                 break;
             
                 case RequestMethod.PUT:
-                return _route( route, _put, request );
+                return _route( route, _put, gateway );
                 break;
             
                 case RequestMethod.DELETE:
-                return _route( route, _delete, request );
+                return _route( route, _delete, gateway );
                 break;
                 
                 case RequestMethod.TRACE:
-                return _route( route, _trace, request );
+                return _route( route, _trace, gateway );
                 break;
             
                 case RequestMethod.GET:
                 case "":
                 default:
                 _notfound.update( RequestMethod.GET );
-                return _route( route, _get, request );
+                return _route( route, _get, gateway );
             }
         }
         
