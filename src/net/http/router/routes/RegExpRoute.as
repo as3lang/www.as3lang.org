@@ -1,6 +1,6 @@
 package net.http.router.routes
 {
-    import net.http.Request;
+    import net.http.Gateway;
     
     public class RegExpRoute extends CommonRoute
     {
@@ -8,10 +8,10 @@ package net.http.router.routes
         private var _params:Object;
         
         public function RegExpRoute( value:String,
-                                     method:String = "", request:Request = null,
+                                     method:String = "", gateway:Gateway = null,
                                      captures:Array = null, params:Object = null )
         {
-            super( value, method, request );
+            super( value, method, gateway );
             
             _params = {};
             
