@@ -1,10 +1,10 @@
 package net.http.router.rules
 {
-    import net.http.Request;
+    import net.http.Gateway;
     import net.http.Response;
-    import net.http.router.routes.CommonRoute;
     import net.http.router.Route;
     import net.http.router.Rule;
+    import net.http.router.routes.CommonRoute;
     
     public class StaticRule implements Rule
     {
@@ -35,9 +35,9 @@ package net.http.router.rules
         }
         
         /** @inheritDoc */
-        public function execute( route:String, request:Request = null ):Route
+        public function execute( route:String, gateway:Gateway = null ):Route
         {
-            var r:Route = new CommonRoute( route, _method, request );
+            var r:Route = new CommonRoute( route, _method, gateway );
             return r;
         }
         
