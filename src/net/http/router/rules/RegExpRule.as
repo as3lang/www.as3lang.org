@@ -1,6 +1,6 @@
 package net.http.router.rules
 {
-    import net.http.Request;
+    import net.http.Gateway;
     import net.http.Response;
     import net.http.router.Route;
     import net.http.router.Rule;
@@ -84,7 +84,7 @@ package net.http.router.rules
         }
         
         /** @inheritDoc */
-        public function execute( route:String, request:Request = null ):Route
+        public function execute( route:String, gateway:Gateway = null ):Route
         {
             var result:*;
             var params:Object = null;
@@ -100,7 +100,7 @@ package net.http.router.rules
                 args   = _parseArgs( result );
             }
             
-            r = new RegExpRoute( route, _method, request, args, params );
+            r = new RegExpRoute( route, _method, gateway, args, params );
             return r;
         }
         
