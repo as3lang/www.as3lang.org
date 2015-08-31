@@ -1,6 +1,6 @@
 package net.http.router
 {
-    import net.http.Request;
+    import net.http.Gateway;
     import net.http.Response;
     
     /**
@@ -77,11 +77,12 @@ package net.http.router
          * 
          * @param route the route path.
          * @param method the specialised HTTP method.
-         * @param request the original request that triggered the route.
+         * @param gateway the <code>Gateway</code> which received the request
+         *        that triggered the route.
          * 
          * @return a Response object.
          */
-        function route( route:String, method:String = "", request:Request = null ):Response;
+        function route( route:String, method:String = "", gateway:Gateway = null ):Response;
         
         /**
          * Returns a list of all the routes defined in this Router.
