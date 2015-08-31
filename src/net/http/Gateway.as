@@ -11,6 +11,11 @@ package net.http
          * The server environment variables.
          */
         function get environment():Environment;
+
+        /**
+         * The server configuration variables.
+         */
+        function get config():Configuration;
         
         /**
          * The current server request that hit the gateway.
