@@ -1,13 +1,26 @@
 package org.as3lang.www
 {
+    import database.couchdb.CouchDB;
+    
+    import net.http.HttpAuthentication;
+    import net.http.HttpHeader;
+    import net.http.HttpRequest;
+    import net.http.HttpResponse;
     import net.http.Response;
+    import net.http.StatusCode;
+    import net.http.responses.TextResponse;
     import net.http.router.Route;
+    import net.http.sessions.Session;
+    import net.http.sessions.SessionManager;
+    import net.http.web.WebConfig;
+    import net.http.web.WebGateway;
     import net.http.web.WebModule;
     import net.http.web.WebPage;
     
     import org.as3lang.www.data.Page;
     
     import shell.FileSystem;
+    import shell.Program;
 
     public class Home
     {
@@ -22,6 +35,233 @@ package org.as3lang.www
             var path:String = "/home/vhosts/as3lang.org/www/data/templates/parts/";
             return FileSystem.read( path + name );
         }
+        
+        public static function onTestSession( r:Route ):Response
+        {
+            var config:WebConfig = r.gateway.config as WebConfig;
+            var sessions:SessionManager = WebGateway( r.gateway ).sessions;
+            var session:Session = sessions.getUserSession();
+                session.start();
+            
+            if( "count" in session.data )
+            {
+                session.data.count++;
+            }
+            else
+            {
+                session.data.count = 0;
+            }
+            
+            var message:String = "";
+            
+            message += "Your session id is \"" + session.id + "\", ";
+            message += "you're visiting this page for ";
+            
+            if( session.data.count == 0 )
+            {
+                message += "the first time";
+            }
+            else
+            {
+                message += "the " + (session.data.count+1) + " time";
+            }
+            
+            message += ".";
+            
+            
+            var page:Response = new TextResponse();
+                page.body = message;
+            
+                //session.stop();
+            return page;
+        }
+        
+        public static function onTestSessionClear( r:Route ):Response
+        {
+            var sessions:SessionManager = WebGateway( r.gateway ).sessions;
+            var session:Session = sessions.getUserSession();
+                session.start();
+                session.clear();
+                
+            var page:Response = new TextResponse();
+                page.body = "Your session id \"" + session.id + "\" has been cleared.";
+            
+                //session.stop();
+            return page;
+        }
+        
+        public static function onTestSessionDestroy( r:Route ):Response
+        {
+            var sessions:SessionManager = WebGateway( r.gateway ).sessions;
+            var session:Session = sessions.getUserSession();
+                session.start();
+                session.destroy();
+            
+            var page:Response = new TextResponse();
+                page.body = "Your session id \"" + session.id + "\" has been destroyed.";
+            
+            return page;
+        }
+        
+        private static function _verifyAuthentification( auth:HttpAuthentication ):Boolean
+        {
+            var credentials:Object = { test: "test" };
+            
+            if( auth.username in credentials )
+            {
+                var password:String = credentials[ auth.username ];
+                if( auth.password == password )
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
+        public static function onTestBasicAuth( r:Route ):Response
+        {
+            var httpRequest:HttpRequest = r.gateway.request as HttpRequest;
+            
+            var authenticated:Boolean = false;
+            var auth:HttpAuthentication = HttpAuthentication.authenticate( httpRequest );
+            
+            var page:Response = new TextResponse();
+            var httpResponse:HttpResponse = page as HttpResponse;
+            
+            //found header with credentials
+            if( auth )
+            {
+                authenticated = _verifyAuthentification( auth );
+            }
+            
+            if( !authenticated )
+            {
+                //ask for credentials
+                var header:HttpHeader = HttpAuthentication.basicChallenge( "test" );
+                httpResponse.addHeader( header, true );
+                httpResponse.status = StatusCode.fromCode( "401" ).toString();
+                
+                httpResponse.body = "test basic auth: no credentials found";
+                
+            }
+            else
+            {
+                httpResponse.body = "test basic auth: authenticated - ";
+                httpResponse.body = "login: " + auth.username + " password: " + auth.password;
+            }
+
+            return httpResponse;
+        }
+        
+        public static function onTestCouchDBDirect( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var result:String = Program.open( "curl -X GET http://127.0.0.1:5984/" );
+            var obj:Object = JSON.parse( result );
+                result = JSON.stringify( obj, null, "    " );
+                page.body += result;
+            
+            return page;
+        }
+        
+        public static function onTestCouchDBInformations( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var couch:CouchDB = new CouchDB();
+            var obj:Object = couch.informations;
+            
+                page.body += JSON.stringify( obj, null, "    " );
+            
+            return page;
+        }
+        
+        public static function onTestCouchDBDatabases( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var couch:CouchDB = new CouchDB();
+            var obj:Array = couch.databases;
+            
+            page.body += JSON.stringify( obj, null, "    " );
+            
+            return page;
+        }
+        
+        public static function onTestCouchDBDatabase1( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var couch:CouchDB = new CouchDB();
+                couch.selectDB( "test_suite_db" );
+            var obj:Object = couch.database;
+            
+            page.body += JSON.stringify( obj, null, "    " );
+            
+            return page;
+        }
+        
+        public static function onTestCouchDBDatabaseCreate( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var couch:CouchDB = new CouchDB();
+            var obj:Object = couch.createDatabase( "hello_world" );
+            
+            page.body += JSON.stringify( obj, null, "    " );
+            
+            return page;
+        }
+        
+        public static function onTestCouchDBDatabaseDelete( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var couch:CouchDB = new CouchDB();
+            var obj:Object = couch.deleteDatabase( "hello_world" );
+            
+            page.body += JSON.stringify( obj, null, "    " );
+            
+            return page;
+        }
+        
+        public static function onTestCouchDBDatabaseSaveDocNoID( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var couch:CouchDB = new CouchDB( "127.0.0.1", "5985" );
+                couch.select( "hello_world" );
+            
+            var doc:Object = {};
+                doc.test = "hello world";
+                
+            var obj:Object = couch.saveDocument( doc );
+            
+            page.body += JSON.stringify( obj, null, "    " );
+            
+            return page;
+        }
+        
+        public static function onTestCouchDBDatabaseSaveDocWithID( r:Route ):Response
+        {
+            var page:TextResponse = new TextResponse( "couchdb:\n" );
+            
+            var couch:CouchDB = new CouchDB();
+            couch.select( "hello_world" );
+            
+            var doc:Object = {};
+                doc._id = "123456789";
+                doc.test = "bonjour le monde";
+            
+            var obj:Object = couch.saveDocument( doc );
+            
+            page.body += JSON.stringify( obj, null, "    " );
+            
+            return page;
+        }
+        
         
         public static function onRoot( r:Route ):Response
         {
