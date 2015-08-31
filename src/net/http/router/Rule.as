@@ -1,6 +1,6 @@
 package net.http.router
 {
-    import net.http.Request;
+    import net.http.Gateway;
     import net.http.Response;
     
     /**
@@ -23,7 +23,7 @@ package net.http.router
          * Parses the given route and returns a Route object
          * containing match informations.
          */
-        function execute( route:String, request:Request = null ):Route;
+        function execute( route:String, gateway:Gateway = null ):Route;
         
         /**
          * Update the method information.
