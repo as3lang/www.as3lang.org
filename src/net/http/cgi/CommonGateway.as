@@ -5,6 +5,7 @@ package net.http.cgi
     
     import flash.utils.ByteArray;
     
+    import net.http.Configuration;
     import net.http.Environment;
     import net.http.Gateway;
     import net.http.HttpUtils;
@@ -22,16 +23,18 @@ package net.http.cgi
     public class CommonGateway implements Gateway
     {
         private var _env:Environment;
+        private var _config:Configuration;
         private var _errors:String;
         
         protected var _destination:String;
         protected var _request:CommonRequest;
         
-        public function CommonGateway():void
+        public function CommonGateway( config:Configuration = null ):void
         {
             super();
             
             _env         = null;
+            _config      = config;
             _errors      = "";
             _destination = "";
             _request     = null;
@@ -121,6 +124,9 @@ package net.http.cgi
         
         /** @inheritDoc */
         public function get environment():Environment { return _env; }
+        
+        /** @inheritDoc */
+        public function get config():Configuration { return _config; };
         
         /** @inheritDoc */
         public function get request():Request { return _request; }
